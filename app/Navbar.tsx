@@ -2,6 +2,7 @@
 import {
   Avatar,
   Box,
+  Button,
   DropdownMenu,
   Flex,
   Heading,
@@ -11,6 +12,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FaChevronDown } from "react-icons/fa";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   return (
@@ -88,7 +94,20 @@ const Navbar = () => {
 // };
 
 const AuthStatus = () => {
-  const status: string = "authenticated";
+  const [email, setEmail] = useState<string>();
+  const [status, setStatus] = useState<string>("loading");
+  const router = useRouter();
+
+  useEffect(() => {
+    const email = Cookies.get("email");
+    if (email) {
+      setEmail(email);
+      setStatus("authenticated");
+    } else {
+      setStatus("unauthenticated");
+    }
+  }, []);
+
   const theme = useThemeContext();
 
   if (status === "loading") return null;
@@ -104,9 +123,23 @@ const AuthStatus = () => {
       </Link>
     );
 
+  const handleSubmit = async () => {
+    try {
+      const res = await axios.post("/api/Auth/logout");
+      console.log("res", res);
+
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        router.push("/login");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
   return (
     <Box className="hidden md:block ">
-      {status === "authenticated" && (
+      {status === "authenticated" && email && (
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             <Box className="bg-[rgba(245,247,250,0.3)] rounded-full pe-4 p-1">
@@ -125,7 +158,7 @@ const AuthStatus = () => {
                     DFC Food
                   </Heading>
                   <Text as="p" className="text-[0.563rem]">
-                    admin@gmail.com
+                    {email}
                   </Text>
                 </Box>
                 <Box>
@@ -142,7 +175,7 @@ const AuthStatus = () => {
               <Link href="/settings">Settings</Link>
             </DropdownMenu.Item>
             <DropdownMenu.Item>
-              <Link href="/signout">Log out</Link>
+              <button onClick={handleSubmit}>Log out</button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Root>

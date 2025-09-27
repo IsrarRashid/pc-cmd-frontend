@@ -1,66 +1,87 @@
 "use client";
-
-// import { LOGIN_API } from "@/app/APIs";
 import { Button, Text, TextField } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
 import { PiArrowCircleRight } from "react-icons/pi";
-// import Cookies from "js-cookie";
-// import { loginMessage } from "@/app/utils/utils";
 import { FaRegEye } from "react-icons/fa";
-import { TbEyeClosed } from "react-icons/tb";
+import { TbEyeClosed, TbMap2 } from "react-icons/tb";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { LuUserRound } from "react-icons/lu";
+import { FiPhone } from "react-icons/fi";
+
+const userProfileSchema = z.object({
+  id: z.string().min(1, { message: "Please add id!" }),
+  userId: z.string().min(1, { message: "Please add userId!" }),
+  typeId: z.number().min(1, { message: "Please add typeId!" }),
+  name: z.string().min(1, { message: "Please add name!" }),
+  licenseNo: z.string().min(1, { message: "Please add licenseNo!" }),
+  designation: z.string().min(1, { message: "Please add designation!" }),
+  phoneNumber: z.string().min(1, { message: "Please add phoneNumber!" }),
+  email: z.email().min(1, { message: "Please add Username!" }),
+  cnic: z.string().min(1, { message: "Please add cnic!" }),
+  divisionId: z.number().min(1, { message: "Please add divisionId!" }),
+  districtId: z.number().min(1, { message: "Please add districtId!" }),
+  tehsilId: z.number().min(1, { message: "Please add tehsilId!" }),
+  address: z.string().min(1, { message: "Please add address!" }),
+  profilePic: z.string().min(1, { message: "Please add profilePic!" }),
+  capacity: z.number().min(1, { message: "Please add capacity!" }),
+  createdAt: z.number().min(1, { message: "Please add createdAt!" }),
+  createdBy: z.number().min(1, { message: "Please add createdBy!" }),
+  updatedAt: z.number().min(1, { message: "Please add updatedAt!" }),
+  updatedBy: z.number().min(1, { message: "Please add updatedBy!" }),
+});
+
+const schema = z.object({
+  username: z.string().min(1, { message: "Please add Username!" }),
+  email: z.email().min(1, { message: "Please add Username!" }),
+  password: z.string().min(1, { message: "Please add Password!" }),
+  roleID: z.string().min(1, { message: "Please add Role!" }),
+  userProfile: userProfileSchema,
+});
+
+export type Register = z.infer<typeof schema>; // this interface is for form data
+
+interface RegisterResponse {
+  responseCode: number;
+  responseMessage: string;
+  data: null;
+}
 
 const Form = () => {
-  // const [isSubmitting, setSubmitting] = useState(false);
-  // "email": "super_admin@gmail.com",
-  //   "password": "!Super@Admin!12"
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  // const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  // Submit handler
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Register>({ resolver: zodResolver(schema) });
+  const [isSubmitting, setSubmitting] = useState(false);
 
+  // const onSubmit = async (formData: Register) => {
+  //   console.log("Form Data:", formData);
   //   try {
-  //     const response = await axios.post(
-  //       `${process.env.NEXT_PUBLIC_BACKEND_URL}${LOGIN_API}`,
-  //       {
-  //         email, // API expects "username"
-  //         password,
-  //       }
-  //     );
+  //     setSubmitting(true);
+  //     const res = await apiClient.post<RegisterResponse>(LOGIN_API, formData);
+  //     console.log("response", res);
+  //     const response: RegisterResponse = res.data;
 
-  //     if (response.data.responseCode === 200) {
-  //       toast.success(loginMessage);
-  //       console.log("responseCode", response.data.responseCode);
-  //       console.log("responseMessage", response.data.responseMessage);
-  //       console.log("user logged in successfully", response);
-  //       console.log("Login Success:", response.data);
-  //       Cookies.set("token", response.data.data.token, {
-  //         expires: new Date(response.data.data.expiration),
-  //       });
-  //       Cookies.set("userName", response.data.data.userData.userName, {
-  //         expires: new Date(response.data.data.expiration),
-  //       });
-  //       Cookies.set("userId", response.data.data.userData.id.toString(), {
-  //         expires: new Date(response.data.data.expiration),
-  //       });
-  //       Cookies.set("email", response.data.data.userData.email, {
-  //         expires: new Date(response.data.data.expiration),
-  //       });
-
-  //       const timer = setTimeout(() => {
-  //         router.push("/");
-  //       }, 5000);
-
-  //       return () => clearTimeout(timer); // Cleanup if component unmounts
+  //     if (response.responseCode === 200) {
+  //       toast.success(response.responseMessage);
+  //       router.push("/");
+  //     } else if (response.responseCode === 401) {
+  //       toast.info(response.responseMessage);
   //     }
+  //     console.log("response", response);
   //   } catch (err) {
-  //     console.log("Login Failed:", err);
   //     toast.error((err as AxiosError).message);
+  //     setSubmitting(false);
+  //     console.log(err);
+  //   } finally {
+  //     setSubmitting(false); // Always run after try/catch
   //   }
   // };
 
@@ -78,8 +99,7 @@ const Form = () => {
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email")}
           >
             <TextField.Slot className="!font-medium">
               <Image
@@ -101,17 +121,10 @@ const Form = () => {
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("username")}
           >
             <TextField.Slot className="!font-medium">
-              <Image
-                src="/icons/mail-at-sign-02.svg"
-                alt="email"
-                height={20}
-                width={20}
-                style={{ width: "20px", height: "20px" }}
-              />
+              <LuUserRound className="text-[#475569]" size={20} />
             </TextField.Slot>
           </TextField.Root>
         </label>
@@ -120,17 +133,16 @@ const Form = () => {
             Role
           </Text>
           <TextField.Root
+            {...register("roleID")}
             placeholder="Write your Role"
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           >
             <TextField.Slot className="!font-medium">
               <Image
-                src="/icons/mail-at-sign-02.svg"
-                alt="email"
+                src="/icons/mentoring.svg"
+                alt="mentoring"
                 height={20}
                 width={20}
                 style={{ width: "20px", height: "20px" }}
@@ -143,21 +155,14 @@ const Form = () => {
             District
           </Text>
           <TextField.Root
+            {...register("userProfile.districtId")}
             placeholder="Write your District"
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           >
             <TextField.Slot className="!font-medium">
-              <Image
-                src="/icons/mail-at-sign-02.svg"
-                alt="email"
-                height={20}
-                width={20}
-                style={{ width: "20px", height: "20px" }}
-              />
+              <TbMap2 className="text-[#475569]" size={20} />
             </TextField.Slot>
           </TextField.Root>
         </label>
@@ -166,17 +171,16 @@ const Form = () => {
             Division
           </Text>
           <TextField.Root
+            {...register("userProfile.divisionId")}
             placeholder="Write your Division"
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           >
             <TextField.Slot className="!font-medium">
               <Image
-                src="/icons/mail-at-sign-02.svg"
-                alt="email"
+                src="/icons/maping.svg"
+                alt="maping"
                 height={20}
                 width={20}
                 style={{ width: "20px", height: "20px" }}
@@ -189,16 +193,15 @@ const Form = () => {
             Tehsil
           </Text>
           <TextField.Root
+            {...register("userProfile.tehsilId")}
             placeholder="Write your Tehsil"
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           >
             <TextField.Slot className="!font-medium">
               <Image
-                src="/icons/mail-at-sign-02.svg"
+                src="/icons/maps-circle-01.svg"
                 alt="email"
                 height={20}
                 width={20}
@@ -212,14 +215,14 @@ const Form = () => {
             Phone No.
           </Text>
           <TextField.Root
+            {...register("userProfile.phoneNumber")}
             placeholder="Write your Phone No."
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           >
             <TextField.Slot className="!font-medium">
+              <FiPhone className="text-[#475569]" size={20} />
               <Image
                 src="/icons/mail-at-sign-02.svg"
                 alt="email"
@@ -235,13 +238,12 @@ const Form = () => {
             Password
           </Text>
           <TextField.Root
+            {...register("password")}
             type={showPassword ? "text" : "password"}
             placeholder="**********"
             radius="full"
             size="3"
             className="!bg-white !h-[50px] [&_input]:!font-medium"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
           >
             <TextField.Slot>
               <Image

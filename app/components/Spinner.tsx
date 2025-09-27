@@ -1,4 +1,3 @@
-// { color = "border-white" }: Props
 const Spinner = ({ color = "dark:text-white" }: { color?: string }) => {
   return (
     <div

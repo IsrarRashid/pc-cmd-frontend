@@ -1,3 +1,4 @@
+"use client";
 import { Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import BgChanger from "../components/BgChanger";

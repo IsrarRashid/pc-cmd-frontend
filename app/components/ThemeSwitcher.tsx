@@ -6,7 +6,6 @@ import { PropsWithChildren } from "react";
 
 const ThemeSwitcher = ({ children }: PropsWithChildren) => {
   const currentPath = usePathname();
-  console.log("currentPath", currentPath);
   return (
     <Theme
       panelBackground="translucent"
