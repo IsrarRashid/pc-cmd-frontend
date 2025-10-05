@@ -12,7 +12,25 @@
   --font-mono: var(--font-geist-mono);
 
   /* Your primary theme color */
-  --color-primary: #aa3c31;
+  --color-primary: #eaa64d;
+
+  @keyframes slideDown {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,4 +56,17 @@ body {
   );
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
+}
+
+.AccordionContent {
+  overflow: hidden;
+  /* font-size: 15px; */
+  /* color: var(--mauve-11); */
+  /* background-color: var(--mauve-2); */
+}
+.AccordionContent[data-state="open"] {
+  animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.AccordionContent[data-state="closed"] {
+  animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }

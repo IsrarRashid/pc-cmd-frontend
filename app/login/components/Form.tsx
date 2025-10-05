@@ -4,21 +4,21 @@
 import { Button, Flex, Text, TextField } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
-import { PiArrowCircleRight } from "react-icons/pi";
+// import { PiArrowCircleRight } from "react-icons/pi";
 // import Cookies from "js-cookie";
 // import { loginMessage } from "@/app/utils/utils";
-import { LOGIN_API } from "@/app/APIs";
-import axios, { AxiosError } from "axios";
+// import { LOGIN_API } from "@/app/APIs";
+// import Spinner from "@/app/components/Spinner";
+// import apiClient from "@/app/services/api-client";
+import { zodResolver } from "@hookform/resolvers/zod";
+// import { AxiosError } from "axios";
 import Link from "next/link";
+// import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { FaRegEye } from "react-icons/fa";
 import { TbEyeClosed } from "react-icons/tb";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+// import { toast } from "react-toastify";
 import z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import apiClient from "@/app/services/api-client";
-import Spinner from "@/app/components/Spinner";
 
 const schema = z.object({
   email: z.string().min(1, { message: "Please add Username!" }),
@@ -27,33 +27,33 @@ const schema = z.object({
 
 export type Login = z.infer<typeof schema>; // this interface is for form data
 
-interface LoginResponse {
-  responseCode: number;
-  responseMessage: string;
-  data: {
-    token: string;
-    expiration: string;
-    role: [];
-    userData: {
-      id: string;
-      userName: string;
-      normalizedUserName: string;
-      email: string;
-      normalizedEmail: string;
-      emailConfirmed: boolean;
-      passwordHash: string;
-      securityStamp: string;
-      concurrencyStamp: string;
-      phoneNumber: null;
-      phoneNumberConfirmed: boolean;
-      twoFactorEnabled: boolean;
-      lockoutEnd: null;
-      lockoutEnabled: boolean;
-      accessFailedCount: number;
-    };
-    userProfile: null;
-  };
-}
+// interface LoginResponse {
+//   responseCode: number;
+//   responseMessage: string;
+//   data: {
+//     token: string;
+//     expiration: string;
+//     role: [];
+//     userData: {
+//       id: string;
+//       userName: string;
+//       normalizedUserName: string;
+//       email: string;
+//       normalizedEmail: string;
+//       emailConfirmed: boolean;
+//       passwordHash: string;
+//       securityStamp: string;
+//       concurrencyStamp: string;
+//       phoneNumber: null;
+//       phoneNumberConfirmed: boolean;
+//       twoFactorEnabled: boolean;
+//       lockoutEnd: null;
+//       lockoutEnabled: boolean;
+//       accessFailedCount: number;
+//     };
+//     userProfile: null;
+//   };
+// }
 
 const Form = () => {
   // "email": "super_admin@gmail.com",
@@ -63,41 +63,42 @@ const Form = () => {
   // "password": "Abcd@123"
 
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   const {
     register,
-    handleSubmit,
+    // handleSubmit,
     formState: { errors },
   } = useForm<Login>({ resolver: zodResolver(schema) });
-  const [isSubmitting, setSubmitting] = useState(false);
+  // const [isSubmitting, setSubmitting] = useState(false);
 
-  const onSubmit = async (formData: Login) => {
-    console.log("Form Data:", formData);
-    try {
-      setSubmitting(true);
-      const res = await apiClient.post<LoginResponse>(LOGIN_API, formData);
-      console.log("response", res);
-      const response: LoginResponse = res.data;
+  // const onSubmit = async (formData: Login) => {
+  //   console.log("Form Data:", formData);
+  //   try {
+  //     setSubmitting(true);
+  //     const res = await apiClient.post<LoginResponse>(LOGIN_API, formData);
+  //     console.log("response", res);
+  //     const response: LoginResponse = res.data;
 
-      if (response.responseCode === 200) {
-        toast.success(response.responseMessage);
-        router.push("/");
-      } else if (response.responseCode === 401) {
-        toast.info(response.responseMessage);
-      }
-      console.log("response", response);
-    } catch (err) {
-      toast.error((err as AxiosError).message);
-      setSubmitting(false);
-      console.log(err);
-    } finally {
-      setSubmitting(false); // Always run after try/catch
-    }
-  };
+  //     if (response.responseCode === 200) {
+  //       toast.success(response.responseMessage);
+  //       router.push("/");
+  //     } else if (response.responseCode === 401) {
+  //       toast.info(response.responseMessage);
+  //     }
+  //     console.log("response", response);
+  //   } catch (err) {
+  //     toast.error((err as AxiosError).message);
+  //     setSubmitting(false);
+  //     console.log(err);
+  //   } finally {
+  //     setSubmitting(false); // Always run after try/catch
+  //   }
+  // };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    // <form onSubmit={handleSubmit(onSubmit)}>
+    <form>
       <Flex direction="column" gap="6" className="mb-[30px]">
         <label>
           <Text as="div" size="2" mb="1" weight="bold" className="text-white">
@@ -196,18 +197,20 @@ const Form = () => {
           )}
         </label>
       </Flex>
-      <Button
-        type="submit"
-        className="!w-full !px-3 !py-6 !bg-primary !text-white bg-clip-border"
-        radius="full"
-        mb="8"
-        disabled={isSubmitting}
-      >
-        <Text weight="bold" size="3">
-          Login
-        </Text>{" "}
-        {isSubmitting ? <Spinner /> : <PiArrowCircleRight size={20} />}
-      </Button>
+      <Link href="/">
+        <Button
+          // type="submit"
+          className="!w-full !px-3 !py-6 !bg-primary !text-white bg-clip-border"
+          radius="full"
+          mb="8"
+          // disabled={isSubmitting}
+        >
+          <Text weight="bold" size="3">
+            Login
+          </Text>{" "}
+          {/* {isSubmitting ? <Spinner /> : <PiArrowCircleRight size={20} />} */}
+        </Button>
+      </Link>
       <Text as="p" align="center" size="4" className="!text-white">
         Don&apos;t have an Account?{" "}
         <Link href="/sign-up" className="text-primary underline">

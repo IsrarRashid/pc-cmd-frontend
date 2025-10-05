@@ -1,17 +1,32 @@
 import { Box, Button, Flex, Select, Text, TextField } from "@radix-ui/themes";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
+import { GiHamburgerMenu } from "react-icons/gi";
 
-const Header = () => {
+interface Props {
+  show: boolean;
+  setShow: Dispatch<SetStateAction<boolean>>;
+}
+
+const Header = ({ show, setShow }: Props) => {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 mb-3 items-center">
         <Box>
-          <Text weight="bold" size="5" className="text-[#8A2014]">
+          <Text weight="bold" size="5" className="text-primary">
             Dashboard
           </Text>
         </Box>
         <Box>
           <Flex align="center" className="gap-[10px]" justify="end">
+            <Button
+              onClick={() => setShow((prev) => !prev)}
+              className="!bg-white !text-[#3A3A3A] !h-[50px] !rounded-[11px] !text-xl !shadow-[0px_0px_0px_1.5px_rgba(58,58,58,0.1)] [&_input::placeholder]:!text-[#3A3A3A] [&_input]:!font-medium"
+            >
+              <GiHamburgerMenu size={24} />
+
+              {show ? "Hide Tiles" : "Show Tiles"}
+            </Button>
             <TextField.Root
               placeholder="Search..."
               size="3"
@@ -27,7 +42,7 @@ const Header = () => {
                 />
               </TextField.Slot>
             </TextField.Root>
-            <Select.Root size="3" defaultValue="Select">
+            <Select.Root size="3" defaultValue="2025-26">
               <Select.Trigger className="!bg-white !h-[50px] !rounded-[11px] !text-xl !shadow-[0px_0px_0px_1.5px_rgba(58,58,58,0.1)] [&_input::placeholder]:!text-[#3A3A3A] [&_input]:!font-medium" />
               <Select.Content>
                 <Select.Group>
@@ -37,7 +52,7 @@ const Header = () => {
                 </Select.Group>
               </Select.Content>
             </Select.Root>
-            <Button className="!bg-white !text-[#3A3A3A] !h-[50px] !rounded-[11px] !text-xl !shadow-[0px_0px_0px_1.5px_rgba(58,58,58,0.1)] [&_input::placeholder]:!text-[#3A3A3A] [&_input]:!font-medium">
+            <Button className="!bg-white !text-[#3A3A3A] !h-[50px] !rounded-[11px] !text-xl !shadow-[0px_0px_0px_1.5px_rgba(58,58,58,0.1)] font-medium !py-[.5em] !px-[0.813em]">
               <Image
                 src="/icons/filter.svg"
                 alt="filter"

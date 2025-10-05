@@ -15,17 +15,14 @@ export async function POST(req: Request) {
     }
 
     // Forward request to backend API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}${LOGIN_API}`,
-      {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      }
-    );
+    const response = await fetch(`${process.env.BACKEND_URL}${LOGIN_API}`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
     const data = await response.json();
 

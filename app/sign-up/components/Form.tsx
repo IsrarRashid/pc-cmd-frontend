@@ -1,16 +1,15 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, TextField } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
-import { PiArrowCircleRight } from "react-icons/pi";
-import { FaRegEye } from "react-icons/fa";
-import { TbEyeClosed, TbMap2 } from "react-icons/tb";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
-import { LuUserRound } from "react-icons/lu";
+import { FaRegEye } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
+import { LuUserRound } from "react-icons/lu";
+import { PiArrowCircleRight } from "react-icons/pi";
+import { TbEyeClosed, TbMap2 } from "react-icons/tb";
+import z from "zod";
 
 const userProfileSchema = z.object({
   id: z.string().min(1, { message: "Please add id!" }),
@@ -44,22 +43,22 @@ const schema = z.object({
 
 export type Register = z.infer<typeof schema>; // this interface is for form data
 
-interface RegisterResponse {
-  responseCode: number;
-  responseMessage: string;
-  data: null;
-}
+// interface RegisterResponse {
+//   responseCode: number;
+//   responseMessage: string;
+//   data: null;
+// }
 
 const Form = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   const {
     register,
-    handleSubmit,
-    formState: { errors },
+    // handleSubmit,
+    // formState: { errors },
   } = useForm<Register>({ resolver: zodResolver(schema) });
-  const [isSubmitting, setSubmitting] = useState(false);
+  // const [isSubmitting, setSubmitting] = useState(false);
 
   // const onSubmit = async (formData: Register) => {
   //   console.log("Form Data:", formData);

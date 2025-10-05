@@ -3,28 +3,35 @@ import {
   Avatar,
   Box,
   Button,
+  Dialog,
   DropdownMenu,
   Flex,
   Heading,
+  IconButton,
   Text,
   useThemeContext,
 } from "@radix-ui/themes";
+import axios from "axios";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import Link from "next/link";
-import { FaChevronDown } from "react-icons/fa";
-import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
+// import CustomLabel from "../Form/CustomLabel";
+// import CustomInput from "../Form/CustomInput";
+import Form from "./forms/Form";
+import MegaMenu from "./MegaMenu";
 
 const Navbar = () => {
   return (
     <nav className="py-2.5 px-[25px] bg-primary">
       <Flex align="center" justify="between" gap="2">
         <Box>
-          <Link href="/">
-            <div className="flex items-center gap-[22px]">
+          <div className="flex items-center gap-[22px]">
+            <Link href="/">
               <Image
                 className="rounded-full"
                 src="/images/logo-white.png"
@@ -33,11 +40,35 @@ const Navbar = () => {
                 style={{ width: "61px", height: "61px" }}
                 alt="logo"
               />
+            </Link>
+            <Flex align="center" className="!gap-[0.875rem]">
               <Heading size="6" className="text-white">
                 PC & CMD
               </Heading>
-            </div>
-          </Link>
+              <Dialog.Root>
+                <Dialog.Trigger>
+                  <Avatar
+                    src="/icons/arrow-right-01.svg"
+                    fallback="arrow"
+                    className="!w-[22px] !h-[22px] bg-[rgba(255,255,255,0.1)]"
+                    radius="full"
+                  />
+                </Dialog.Trigger>
+
+                <Dialog.Content
+                  size="4"
+                  maxWidth="1100px"
+                  className="!py-[20px] !px-[20px] sm:px-[60px] !rounded-[20px] !border-[#F2F2F5] !border-[1px]"
+                >
+                  <Dialog.Title className="!sr-only">title</Dialog.Title>
+                  <Dialog.Description size="2" mb="4" className="!sr-only">
+                    description
+                  </Dialog.Description>
+                  <MegaMenu />
+                </Dialog.Content>
+              </Dialog.Root>
+            </Flex>
+          </div>
         </Box>
         {/* <Box className="hidden lg:block">
           <NavLinks />
@@ -149,7 +180,6 @@ const AuthStatus = () => {
                     src="/images/user.png"
                     fallback="?"
                     radius="full"
-                    className="cursor-pointer"
                     size="4"
                   />
                 </Box>
