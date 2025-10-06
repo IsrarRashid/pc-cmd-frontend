@@ -2,12 +2,10 @@
 import {
   Avatar,
   Box,
-  Button,
   Dialog,
   DropdownMenu,
   Flex,
   Heading,
-  IconButton,
   Text,
   useThemeContext,
 } from "@radix-ui/themes";
@@ -18,11 +16,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 // import CustomLabel from "../Form/CustomLabel";
 // import CustomInput from "../Form/CustomInput";
-import Form from "./forms/Form";
 import MegaMenu from "./MegaMenu";
 
 const Navbar = () => {

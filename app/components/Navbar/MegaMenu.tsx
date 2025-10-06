@@ -116,8 +116,8 @@ const MegaMenu = () => {
         <Text as="p" size="2" weight="medium" className="text-primary" mb="4">
           Province Data
         </Text>
-        {provinceData.map((d) => (
-          <Dialog.Root>
+        {provinceData.map((d, i) => (
+          <Dialog.Root key={i}>
             <Dialog.Trigger>
               <Flex
                 gap="4"
@@ -192,8 +192,8 @@ const MegaMenu = () => {
         <Text as="p" size="2" weight="medium" className="text-primary" mb="4">
           Forms
         </Text>
-        {formsData.map((d) => (
-          <Dialog.Root>
+        {formsData.map((d, i) => (
+          <Dialog.Root key={i}>
             <Dialog.Trigger>
               <Flex
                 gap="4"
@@ -268,8 +268,8 @@ const MegaMenu = () => {
         <Text as="p" size="2" weight="medium" className="text-primary" mb="4">
           Product
         </Text>
-        {productData.map((d) => (
-          <Dialog.Root>
+        {productData.map((d, i) => (
+          <Dialog.Root key={i}>
             <Dialog.Trigger>
               <Flex
                 gap="4"
@@ -346,6 +346,7 @@ const MegaMenu = () => {
         </Text>
         {getStartedData.map((d) => (
           <Text
+            key={d}
             as="p"
             weight="medium"
             size="4"

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useMap } from "@vis.gl/react-google-maps";
-import { Polygon } from "../polygon";
+import { useEffect, useMemo, useState } from "react";
+import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { ProvinceFeature } from "./ProvincesArea";
+import DivisionCard from "../Cards/New/DivisionCard";
 
 // --- Interfaces ---
-interface DivisionFeature {
+export interface DivisionFeature {
   type: "Feature";
   properties: {
     GID_2: string;
@@ -37,12 +38,28 @@ export interface GeoJSONDivisions {
   features: DivisionFeature[];
 }
 
-interface DivisionsAreaProps {
+interface Props {
   geoData: GeoJSONDivisions;
+  selectedProvince?: ProvinceFeature | null;
+  selectedDivision?: DivisionFeature | null;
+  onDivisionClick?: (division: DivisionFeature | null) => void; // allow null for "Back"
 }
 
 // --- Component ---
-export default function DivisionsArea({ geoData }: DivisionsAreaProps) {
+export default function DivisionsArea({
+  geoData,
+  selectedProvince,
+  selectedDivision,
+  onDivisionClick,
+}: Props) {
+  const [hoveredDivision, setHoveredDivision] = useState<{
+    coords: google.maps.LatLngLiteral;
+    feature: DivisionFeature;
+  } | null>(null);
+  const [mousePos, setMousePos] = useState<google.maps.LatLngLiteral | null>(
+    null
+  );
+
   const map = useMap();
 
   const colors = useMemo(
@@ -71,46 +88,106 @@ export default function DivisionsArea({ geoData }: DivisionsAreaProps) {
     []
   );
 
-  // Convert geometry to Google Maps paths
-  const divisionCoords = useMemo(
-    () =>
-      geoData.features.map((feature) =>
-        feature.geometry.coordinates.map((polygon) =>
-          polygon[0].map(([lng, lat]) => ({ lat, lng }))
-        )
-      ),
-    [geoData]
-  );
+  // Always compute filteredDivisions, even if empty
+  const filteredDivisions = useMemo(() => {
+    if (!selectedProvince) return [];
+    return geoData.features.filter(
+      (div) => div.properties.NAME_1 === selectedProvince.properties.NAME_1
+    );
+  }, [geoData.features, selectedProvince]);
 
-  // Fit map bounds to all divisions
+  // Convert to polygons and render
+  const divisionCoords = useMemo(() => {
+    return filteredDivisions.map((feature) =>
+      feature.geometry.coordinates.map((poly) =>
+        poly[0].map(([lng, lat]) => ({ lat, lng }))
+      )
+    );
+  }, [filteredDivisions]);
+
+  // Fit bounds to the province whenever filteredDivisions change
   useEffect(() => {
-    if (!map || !divisionCoords.length) return;
+    if (!map || !filteredDivisions.length) return;
 
     const bounds = new google.maps.LatLngBounds();
-    divisionCoords.forEach((multiPoly) =>
-      multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)))
-    );
-
-    map.fitBounds(bounds, { top: 30, bottom: 30, left: 30, right: 30 });
-
-    google.maps.event.addListenerOnce(map, "idle", () => {
-      map.setZoom(map.getZoom()! + 1);
+    filteredDivisions.forEach((div) => {
+      div.geometry.coordinates.forEach((poly) =>
+        poly[0].forEach(([lng, lat]) => bounds.extend({ lat, lng }))
+      );
     });
-  }, [divisionCoords, map]);
+
+    map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
+  }, [map, filteredDivisions, selectedDivision]);
+
+  // Render polygons with hover info
+  useEffect(() => {
+    if (!map) return;
+
+    const polygons: google.maps.Polygon[] = [];
+
+    divisionCoords.forEach((multiPoly, i) => {
+      const divFeature = filteredDivisions[i];
+
+      const polygon = new google.maps.Polygon({
+        paths: multiPoly,
+        strokeColor: "#000",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: colors[i % colors.length],
+        fillOpacity:
+          selectedDivision?.properties.NAME_2 === divFeature.properties.NAME_2
+            ? 0 // transparent if selected for districts
+            : 0.25,
+        clickable:
+          selectedDivision?.properties.NAME_2 !== divFeature.properties.NAME_2, // disable click if selected
+        map,
+      });
+
+      // Hover info
+      polygon.addListener("mousemove", (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          setHoveredDivision({
+            feature: divFeature,
+            coords: { lat: e.latLng.lat(), lng: e.latLng.lng() },
+          });
+          setMousePos({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        }
+      });
+
+      polygon.addListener("mouseout", () => {
+        setHoveredDivision(null);
+        setMousePos(null);
+      });
+
+      // Click
+      polygon.addListener("click", () => {
+        if (onDivisionClick && polygon.get("clickable"))
+          onDivisionClick(divFeature);
+      });
+
+      polygons.push(polygon);
+    });
+
+    return () => polygons.forEach((p) => p.setMap(null));
+  }, [
+    map,
+    divisionCoords,
+    filteredDivisions,
+    colors,
+    selectedDivision,
+    onDivisionClick,
+  ]);
 
   return (
     <>
-      {divisionCoords.map((multiPoly, i) => (
-        <Polygon
-          key={i}
-          paths={multiPoly}
-          strokeColor="#000"
-          strokeOpacity={0.5}
-          strokeWeight={1}
-          fillColor={colors[i % colors.length]}
-          fillOpacity={0.25}
-        />
-      ))}
+      {hoveredDivision && (
+        <InfoWindow
+          position={mousePos || hoveredDivision.coords}
+          pixelOffset={[0, -30]}
+        >
+          <DivisionCard Division={hoveredDivision.feature} />
+        </InfoWindow>
+      )}
     </>
   );
 }

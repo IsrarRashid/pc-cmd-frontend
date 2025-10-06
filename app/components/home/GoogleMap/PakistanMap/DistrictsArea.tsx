@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useMap } from "@vis.gl/react-google-maps";
-import { Polygon } from "../polygon";
+import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { useEffect, useMemo, useState } from "react";
+import DistrictCard from "../Cards/New/DistrictCard";
+import { DivisionFeature } from "./DivisionsArea";
 
 // --- Interfaces ---
 interface DistrictFeature {
@@ -39,12 +40,21 @@ export interface GeoJSONDistricts {
   features: DistrictFeature[];
 }
 
-interface DistrictsAreaProps {
+interface Props {
   geoData: GeoJSONDistricts;
+  selectedDivision?: DivisionFeature | null;
 }
 
 // --- Component ---
-export default function DistrictsArea({ geoData }: DistrictsAreaProps) {
+export default function DistrictsArea({ geoData, selectedDivision }: Props) {
+  const [hoveredDistrict, setHoveredDistrict] = useState<{
+    coords: google.maps.LatLngLiteral;
+    feature: DistrictFeature;
+  } | null>(null);
+  const [mousePos, setMousePos] = useState<google.maps.LatLngLiteral | null>(
+    null
+  );
+
   const map = useMap();
 
   const colors = useMemo(
@@ -73,46 +83,87 @@ export default function DistrictsArea({ geoData }: DistrictsAreaProps) {
     []
   );
 
-  // Convert coordinates into Google Maps-friendly format
-  const districtCoords = useMemo(
-    () =>
-      geoData.features.map((feature) =>
-        feature.geometry.coordinates.map((poly) =>
-          poly[0].map(([lng, lat]) => ({ lat, lng }))
-        )
-      ),
-    [geoData]
-  );
+  // Always filter districts (hook always called)
+  const filteredDistricts = useMemo(() => {
+    if (!selectedDivision) return [];
+    return geoData.features.filter(
+      (dist) => dist.properties.NAME_2 === selectedDivision.properties.NAME_2
+    );
+  }, [geoData.features, selectedDivision]);
 
-  // Fit map bounds to all districts
+  const districtCoords = useMemo(() => {
+    return filteredDistricts.map((feature) =>
+      feature.geometry.coordinates.map((poly) =>
+        poly[0].map(([lng, lat]) => ({ lat, lng }))
+      )
+    );
+  }, [filteredDistricts]);
+
+  // Fit map effect
   useEffect(() => {
-    if (!map || !districtCoords.length) return;
+    if (!map || districtCoords.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
     districtCoords.forEach((multiPoly) =>
       multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)))
     );
+    map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
+  }, [map, districtCoords]);
 
-    map.fitBounds(bounds, { top: 30, bottom: 30, left: 30, right: 30 });
+  // Render polygons
+  useEffect(() => {
+    if (!map || districtCoords.length === 0) return;
 
-    google.maps.event.addListenerOnce(map, "idle", () => {
-      map.setZoom(map.getZoom()! + 1);
+    const polygons: google.maps.Polygon[] = [];
+
+    districtCoords.forEach((multiPoly, i) => {
+      const polygon = new google.maps.Polygon({
+        paths: multiPoly,
+        strokeColor: "#000",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: colors[i % colors.length],
+        fillOpacity: 0.25,
+        map,
+      });
+
+      // Mouse hover
+      polygon.addListener("mousemove", (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          setHoveredDistrict({
+            feature: filteredDistricts[i],
+            coords: { lat: e.latLng.lat(), lng: e.latLng.lng() },
+          });
+          setMousePos({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        }
+      });
+
+      polygon.addListener("mouseout", () => {
+        setHoveredDistrict(null);
+        setMousePos(null);
+      });
+
+      // Disable click if needed
+      polygon.setOptions({
+        clickable: true,
+      });
+
+      polygons.push(polygon);
     });
-  }, [districtCoords, map]);
+
+    return () => polygons.forEach((p) => p.setMap(null));
+  }, [map, districtCoords, filteredDistricts, colors]);
 
   return (
     <>
-      {districtCoords.map((multiPoly, i) => (
-        <Polygon
-          key={i}
-          paths={multiPoly}
-          strokeColor="#000"
-          strokeOpacity={0.5}
-          strokeWeight={1}
-          fillColor={colors[i % colors.length]}
-          fillOpacity={0.25}
-        />
-      ))}
+      {hoveredDistrict && (
+        <InfoWindow
+          position={mousePos || hoveredDistrict.coords}
+          pixelOffset={[0, -30]}
+        >
+          <DistrictCard District={hoveredDistrict.feature} />
+        </InfoWindow>
+      )}
     </>
   );
 }

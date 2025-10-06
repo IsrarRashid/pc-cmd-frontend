@@ -1,4 +1,4 @@
-import { DivisionData, DivisionFeature } from "../PunjabMap";
+import { DivisionData, DivisionFeature } from "./PunjabMap";
 
 type DivisionCardProps = {
   division: DivisionFeature;
@@ -9,7 +9,7 @@ const DivisionCard = ({ division, divisionData }: DivisionCardProps) => {
   if (!divisionData) {
     return (
       <div className="border-0 bg-white p-4 rounded-lg">
-        <div className="font-bold">{division.properties.NAME_2}</div>
+        <div className="font-bold">{division.props.NAME_2}</div>
         <p className="text-sm text-gray-500">No data available</p>
       </div>
     );
@@ -24,7 +24,7 @@ const DivisionCard = ({ division, divisionData }: DivisionCardProps) => {
       }}
     >
       {/* Division Name */}
-      <div className="col font-bold fs-6">{division.properties.NAME_2}</div>
+      <div className="col font-bold fs-6">{division.props.NAME_2}</div>
 
       {/* Total */}
       <div className="row d-flex fs-6 m-2">

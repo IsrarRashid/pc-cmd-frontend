@@ -1,18 +1,17 @@
 "use client";
 
-import { MouseEvent, useRef, useState } from "react";
-import CustomRadixInput from "../../Form/CustomRadixInput";
-import CustomLabel from "../../Form/CustomLabel";
-import CustomSelect, { defaultOption } from "../../Form/CustomSelect";
-import CustomInput from "../../Form/CustomInput";
-import { TbFileUpload } from "react-icons/tb";
-import FileUpload from "../FileUpload";
 import { Box, Flex, IconButton, Text } from "@radix-ui/themes";
+import { MouseEvent, useRef, useState } from "react";
+import { TbFileUpload } from "react-icons/tb";
+import CustomInput from "../../Form/CustomInput";
+import CustomLabel from "../../Form/CustomLabel";
+import CustomRadixInput from "../../Form/CustomRadixInput";
+import CustomSelect, { defaultOption } from "../../Form/CustomSelect";
 
 const Form = () => {
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File>();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  console.log(previewUrl);
 
   const districtOptions = [
     { districtName: "Okara" },
@@ -48,10 +47,6 @@ const Form = () => {
       setPreviewUrl(objectUrl);
       setSelectedFile(file);
     }
-  };
-
-  const handleFile = (file: File) => {
-    console.log("Selected file:", file);
   };
 
   return (

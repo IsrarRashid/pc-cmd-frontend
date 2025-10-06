@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { Polygon } from "../polygon";
+import { ProvinceFeature } from "./ProvincesArea";
 
 export interface GeoJSONPakistan {
   type: "FeatureCollection";
@@ -34,9 +35,10 @@ export interface Geometry {
 
 interface PakistanAreaProps {
   geoData: GeoJSONPakistan;
+  selectedProvince: ProvinceFeature | null;
 }
 
-const PakistanArea = ({ geoData }: PakistanAreaProps) => {
+const PakistanArea = ({ geoData, selectedProvince }: PakistanAreaProps) => {
   const map = useMap();
   const [pakistanCoords, setPakistanCoords] = useState<
     google.maps.LatLngLiteral[][]
@@ -47,7 +49,7 @@ const PakistanArea = ({ geoData }: PakistanAreaProps) => {
 
     // Convert MultiPolygon GeoJSON to array of paths
     const coords: google.maps.LatLngLiteral[][] = geoData.features.flatMap(
-      (feature: any) =>
+      (feature) =>
         feature.geometry.coordinates.map((polygon: number[][][]) =>
           polygon[0].map(([lng, lat]) => ({ lat, lng }))
         )
@@ -56,14 +58,15 @@ const PakistanArea = ({ geoData }: PakistanAreaProps) => {
     setPakistanCoords(coords);
 
     // Fit bounds automatically to all coordinates
-    const bounds = new google.maps.LatLngBounds();
-    coords.forEach((polygon) =>
-      polygon.forEach((point) => bounds.extend(point))
-    );
-    // Fit with minimal padding
-    map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
-    map.setZoom(5.5);
-  }, [geoData, map]);
+    if (!selectedProvince) {
+      const bounds = new google.maps.LatLngBounds();
+      coords.forEach((polygon) =>
+        polygon.forEach((point) => bounds.extend(point))
+      );
+      map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
+      map.setZoom(5.5);
+    }
+  }, [geoData, map, selectedProvince]);
 
   return (
     <>
@@ -75,7 +78,8 @@ const PakistanArea = ({ geoData }: PakistanAreaProps) => {
           strokeOpacity={0.8}
           strokeWeight={5}
           fillColor="#01411C"
-          fillOpacity={0.05}
+          fillOpacity={0}
+          clickable={false}
         />
       ))}
     </>

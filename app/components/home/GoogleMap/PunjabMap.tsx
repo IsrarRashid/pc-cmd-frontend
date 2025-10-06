@@ -41,7 +41,7 @@ interface ProvinceProperties {
   HASC_1?: string;
 }
 interface ProvinceFeature extends PolygonGeometry {
-  props: ProvinceProperties;
+  properties: ProvinceProperties;
 }
 
 // Division
@@ -61,7 +61,7 @@ interface DivisionProperties {
   HASC_2: string;
 }
 export interface DivisionFeature extends PolygonGeometry {
-  props: DivisionProperties;
+  properties: DivisionProperties;
 }
 
 // District
@@ -80,7 +80,7 @@ interface DistrictProperties {
 }
 
 export interface DistrictFeature extends PolygonGeometry {
-  props: DistrictProperties;
+  properties: DistrictProperties;
 }
 
 // ============ DUMMY JSON DATA
@@ -577,7 +577,7 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
 
       // Now we can create punjabFeature using punjabCoords
       setPunjabFeature({
-        props: punjab.properties,
+        properties: punjab.properties,
         coords, // this is the same coords used to draw the polygon
       });
     }
@@ -588,7 +588,7 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
         coords: division.geometry.coordinates.map((polygon: number[][][]) =>
           polygon[0].map(([lng, lat]) => ({ lat, lng }))
         ),
-        props: division.properties as DivisionProperties, // <-- cast if needed
+        properties: division.properties as DivisionProperties, // <-- cast if needed
       })
     );
     setDivisionPolys(divisionFeatures);
@@ -599,7 +599,7 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
         coords: district.geometry.coordinates.map((polygon: number[][][]) =>
           polygon[0].map(([lng, lat]) => ({ lat, lng }))
         ),
-        props: district.properties as DistrictProperties,
+        properties: district.properties as DistrictProperties,
       })
     );
     setDistrictPolys(districtFeatures);
@@ -772,7 +772,7 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
 
             {/* Divisions */}
             {divisionPolys.map((d, i) => {
-              const divisionName = d.props.NAME_2;
+              const divisionName = d.properties.NAME_2;
               const price = divisionData[divisionName!]?.total ?? 0;
               // Compute a center for the polygon to position the InfoWindow
               const center: google.maps.LatLngLiteral = {
@@ -809,7 +809,9 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
               >
                 <DivisionCard
                   division={hoveredDivision}
-                  divisionData={divisionData[hoveredDivision.props.NAME_2!]}
+                  divisionData={
+                    divisionData[hoveredDivision.properties.NAME_2!]
+                  }
                 />
               </InfoWindow>
             )}
@@ -818,10 +820,11 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
             {activeDivision &&
               districtPolys
                 .filter(
-                  (dist) => dist.props.NAME_2 === activeDivision.props.NAME_2
+                  (dist) =>
+                    dist.properties.NAME_2 === activeDivision.properties.NAME_2
                 )
                 .map((d, i) => {
-                  const districtName = d.props.NAME_3;
+                  const districtName = d.properties.NAME_3;
 
                   // Compute center for InfoWindow
                   const center: google.maps.LatLngLiteral = {
@@ -830,7 +833,7 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
                   };
 
                   const districtValue =
-                    divisionData[activeDivision.props.NAME_2!]?.districts[
+                    divisionData[activeDivision.properties.NAME_2!]?.districts[
                       districtName!
                     ];
 
@@ -866,8 +869,8 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
                 <DistrictCard
                   district={hoveredDistrict}
                   districtData={
-                    divisionData[activeDivision!.props.NAME_2!]?.districts[
-                      hoveredDistrict.props.NAME_3!
+                    divisionData[activeDivision!.properties.NAME_2!]?.districts[
+                      hoveredDistrict.properties.NAME_3!
                     ] ?? { total: 0, godowns: [] } // fallback DistrictData
                   }
                 />
@@ -878,9 +881,9 @@ const PunjabMap = ({ divisions }: { divisions: Division[] }) => {
             {activeDivision &&
               activeDistrict &&
               (() => {
-                const districtName = activeDistrict.props.NAME_3;
+                const districtName = activeDistrict.properties.NAME_3;
                 const godowns =
-                  divisionData[activeDivision.props.NAME_2!]?.districts[
+                  divisionData[activeDivision.properties.NAME_2!]?.districts[
                     districtName!
                   ]?.godowns ?? [];
 

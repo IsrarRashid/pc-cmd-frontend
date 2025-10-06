@@ -1,12 +1,12 @@
-import { DistrictData, DistrictFeature } from "../PunjabMap";
+import { DistrictData, DistrictFeature } from "./PunjabMap";
 
 // DistrictCard.tsx
-type DistrictCardProps = {
+type GodownCardProps = {
   district: DistrictFeature;
   districtData: DistrictData; // use the new interface we defined
 };
 
-const DistrictCard = ({ district, districtData }: DistrictCardProps) => {
+const GodownCard = ({ district, districtData }: GodownCardProps) => {
   return (
     <div
       className="border-0 bg-white"
@@ -15,7 +15,7 @@ const DistrictCard = ({ district, districtData }: DistrictCardProps) => {
         padding: "10px",
       }}
     >
-      <div className="col font-bold fs-6">{district.properties.NAME_3}</div>
+      <div className="col font-bold fs-6">{district.props.NAME_3}</div>
       <div className="row d-flex fs-6 m-2">
         <div
           className="col shadow-sm p-2 me-2 d-flex bg-blue-300"
@@ -45,4 +45,4 @@ const DistrictCard = ({ district, districtData }: DistrictCardProps) => {
   );
 };
 
-export default DistrictCard;
+export default GodownCard;

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./_css/InfoWindow.css";
 
 :root {
   --background: #ffffff;

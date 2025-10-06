@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { TbFileUpload } from "react-icons/tb";
 
@@ -98,7 +99,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       {previewUrl && (
         <div className="text-center mt-3">
-          <img
+          <Image
             src={previewUrl}
             alt="Preview"
             style={{

@@ -5,10 +5,8 @@ import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
 import { GrLinkNext } from "react-icons/gr";
-import { ChartType } from "../charts/MyPieChart";
-import PunjabMap from "./GoogleMap/PunjabMap";
-import Header from "./Header";
 import PakistanMap from "./GoogleMap/PakistanMap/PakistanMap";
+import Header from "./Header";
 
 const Home = ({ dashboardData }: { dashboardData: Dashboard }) => {
   // const chartData: ChartType[] = [

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useMap } from "@vis.gl/react-google-maps";
-import { Polygon } from "../polygon";
+import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import ProvinceCard from "../Cards/ProvinceCard";
 
 // --- Interfaces ---
-interface GeoFeature {
+export interface ProvinceFeature {
   type: "Feature";
   properties: {
     GID_1: string;
@@ -31,11 +31,13 @@ export interface GeoJSONProvinces {
     type: string;
     properties: { name: string };
   };
-  features: GeoFeature[];
+  features: ProvinceFeature[];
 }
 
-interface ProvincesAreaProps {
+interface Props {
   geoData: GeoJSONProvinces;
+  selectedProvince?: ProvinceFeature | null;
+  onProvinceClick?: (province: ProvinceFeature) => void;
 }
 
 const colors = [
@@ -48,7 +50,19 @@ const colors = [
   "#FF8C00",
 ];
 
-export default function ProvincesArea({ geoData }: ProvincesAreaProps) {
+export default function ProvincesArea({
+  geoData,
+  onProvinceClick,
+  selectedProvince,
+}: Props) {
+  const [hoveredProvince, setHoveredProvince] = useState<{
+    coords: google.maps.LatLngLiteral;
+    feature: ProvinceFeature;
+  } | null>(null);
+  const [mousePos, setMousePos] = useState<google.maps.LatLngLiteral | null>(
+    null
+  );
+
   const map = useMap();
 
   // Convert MultiPolygon → LatLngLiteral[][][]
@@ -63,34 +77,111 @@ export default function ProvincesArea({ geoData }: ProvincesAreaProps) {
   );
 
   // Fit map to Pakistan’s bounds
+  //   useEffect(() => {
+  //     if (!map || !provinceCoords.length) return;
+
+  //     const bounds = new google.maps.LatLngBounds();
+  //     provinceCoords.forEach((multiPoly) =>
+  //       multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)))
+  //     );
+
+  //     map.fitBounds(bounds, { top: 30, bottom: 30, left: 30, right: 30 });
+
+  //     google.maps.event.addListenerOnce(map, "idle", () => {
+  //       map.setZoom(map.getZoom()! + 1);
+  //     });
+  //   }, [provinceCoords, map]);
+
+  // Function to fit map to a province when clicked
+  const fitProvinceBounds = useCallback(
+    (multiPoly: google.maps.LatLngLiteral[][]) => {
+      if (!map) return;
+      const bounds = new google.maps.LatLngBounds();
+      multiPoly.forEach((poly) =>
+        poly.forEach((point) => bounds.extend(point))
+      );
+      map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
+    },
+    [map]
+  );
+  // const fitProvinceBounds = (multiPoly: google.maps.LatLngLiteral[][]) => {
+  //   if (!map) return;
+  //   const bounds = new google.maps.LatLngBounds();
+  //   multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)));
+  //   map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
+  // };
+
   useEffect(() => {
-    if (!map || !provinceCoords.length) return;
+    if (!map) return;
 
-    const bounds = new google.maps.LatLngBounds();
-    provinceCoords.forEach((multiPoly) =>
-      multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)))
-    );
+    const polygons: google.maps.Polygon[] = [];
 
-    map.fitBounds(bounds, { top: 30, bottom: 30, left: 30, right: 30 });
+    provinceCoords.forEach((multiPoly, i) => {
+      const feature = geoData.features[i];
+      const isSelected =
+        selectedProvince?.properties.GID_1 === feature.properties.GID_1;
 
-    google.maps.event.addListenerOnce(map, "idle", () => {
-      map.setZoom(map.getZoom()! + 1);
+      const polygon = new google.maps.Polygon({
+        paths: multiPoly,
+        // strokeColor: colors[i % colors.length],
+        strokeColor: "#000",
+        strokeOpacity: 0.7,
+        strokeWeight: 3,
+        fillColor: colors[i % colors.length],
+        fillOpacity: isSelected ? 0 : 0.35, // hide fill if selected
+        clickable: !isSelected, // disable further clicks if selected
+        map,
+      });
+
+      if (!isSelected) {
+        // Mouse move event to track cursor
+        polygon.addListener("mousemove", (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) {
+            setHoveredProvince({
+              feature,
+              coords: { lat: e.latLng.lat(), lng: e.latLng.lng() },
+            });
+          }
+        });
+
+        // Mouse out event
+        polygon.addListener("mouseout", () => {
+          setHoveredProvince(null);
+          setMousePos(null);
+        });
+
+        // Click event to zoom to province bounds and mark as selected
+        polygon.addListener("click", () => {
+          if (onProvinceClick) onProvinceClick(feature);
+          fitProvinceBounds(multiPoly);
+        });
+      }
+
+      polygons.push(polygon);
     });
-  }, [provinceCoords, map]);
+
+    return () => {
+      polygons.forEach((p) => p.setMap(null)); // Cleanup
+    };
+  }, [
+    map,
+    provinceCoords,
+    geoData.features,
+    selectedProvince,
+    onProvinceClick,
+    fitProvinceBounds,
+  ]);
 
   return (
     <>
-      {provinceCoords.map((multiPoly, i) => (
-        <Polygon
-          key={i}
-          paths={multiPoly}
-          strokeColor="#000"
-          strokeOpacity={0.7}
-          strokeWeight={2}
-          fillColor={colors[i % colors.length]}
-          fillOpacity={0.35}
-        />
-      ))}
+      {hoveredProvince && (
+        <InfoWindow
+          position={mousePos || hoveredProvince.coords}
+          pixelOffset={[0, -30]}
+        >
+          <ProvinceCard Province={hoveredProvince.feature} />
+        </InfoWindow>
+      )}
     </>
   );
 }
