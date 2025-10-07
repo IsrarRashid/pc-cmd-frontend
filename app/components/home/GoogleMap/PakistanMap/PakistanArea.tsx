@@ -76,7 +76,7 @@ const PakistanArea = ({ geoData, selectedProvince }: PakistanAreaProps) => {
           paths={path}
           strokeColor="#000"
           strokeOpacity={0.8}
-          strokeWeight={5}
+          strokeWeight={2}
           fillColor="#01411C"
           fillOpacity={0}
           clickable={false}

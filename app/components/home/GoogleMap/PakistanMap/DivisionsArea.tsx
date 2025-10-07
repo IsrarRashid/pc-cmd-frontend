@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
 import { ProvinceFeature } from "./ProvincesArea";
 import DivisionCard from "../Cards/New/DivisionCard";
+import { DivisionProduction } from "@/app/page";
 
 // --- Interfaces ---
 export interface DivisionFeature {
@@ -43,6 +44,7 @@ interface Props {
   selectedProvince?: ProvinceFeature | null;
   selectedDivision?: DivisionFeature | null;
   onDivisionClick?: (division: DivisionFeature | null) => void; // allow null for "Back"
+  data: DivisionProduction[] | undefined;
 }
 
 // --- Component ---
@@ -51,6 +53,7 @@ export default function DivisionsArea({
   selectedProvince,
   selectedDivision,
   onDivisionClick,
+  data,
 }: Props) {
   const [hoveredDivision, setHoveredDivision] = useState<{
     coords: google.maps.LatLngLiteral;
@@ -132,7 +135,7 @@ export default function DivisionsArea({
         paths: multiPoly,
         strokeColor: "#000",
         strokeOpacity: 0.5,
-        strokeWeight: 3,
+        strokeWeight: 2,
         fillColor: colors[i % colors.length],
         fillOpacity:
           selectedDivision?.properties.NAME_2 === divFeature.properties.NAME_2
@@ -185,7 +188,7 @@ export default function DivisionsArea({
           position={mousePos || hoveredDivision.coords}
           pixelOffset={[0, -30]}
         >
-          <DivisionCard Division={hoveredDivision.feature} />
+          <DivisionCard Division={hoveredDivision.feature} data={data} />
         </InfoWindow>
       )}
     </>

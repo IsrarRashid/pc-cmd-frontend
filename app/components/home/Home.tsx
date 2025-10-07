@@ -1,6 +1,6 @@
 "use client";
 
-import { Dashboard } from "@/app/page";
+import { Dashboard, ProductionDashboard } from "@/app/page";
 import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
@@ -8,7 +8,12 @@ import { GrLinkNext } from "react-icons/gr";
 import PakistanMap from "./GoogleMap/PakistanMap/PakistanMap";
 import Header from "./Header";
 
-const Home = ({ dashboardData }: { dashboardData: Dashboard }) => {
+interface Props {
+  dashboardData: Dashboard;
+  productionDashboardData: ProductionDashboard;
+}
+
+const Home = ({ dashboardData, productionDashboardData }: Props) => {
   // const chartData: ChartType[] = [
   //   {
   //     label: "Flour",
@@ -591,7 +596,7 @@ const Home = ({ dashboardData }: { dashboardData: Dashboard }) => {
         <div className="w-full h-full">
           {/* <MyMap /> */}
           {/* <PunjabMap divisions={dashboardData.divisions} /> */}
-          <PakistanMap />
+          <PakistanMap productionDashboardData={productionDashboardData} />
         </div>
       </Box>
     </div>

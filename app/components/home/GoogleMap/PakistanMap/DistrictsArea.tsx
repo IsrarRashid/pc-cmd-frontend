@@ -4,6 +4,7 @@ import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
 import { useEffect, useMemo, useState } from "react";
 import DistrictCard from "../Cards/New/DistrictCard";
 import { DivisionFeature } from "./DivisionsArea";
+import { DistrictProduction } from "@/app/page";
 
 // --- Interfaces ---
 interface DistrictFeature {
@@ -43,10 +44,15 @@ export interface GeoJSONDistricts {
 interface Props {
   geoData: GeoJSONDistricts;
   selectedDivision?: DivisionFeature | null;
+  data: DistrictProduction[] | undefined;
 }
 
 // --- Component ---
-export default function DistrictsArea({ geoData, selectedDivision }: Props) {
+export default function DistrictsArea({
+  geoData,
+  selectedDivision,
+  data,
+}: Props) {
   const [hoveredDistrict, setHoveredDistrict] = useState<{
     coords: google.maps.LatLngLiteral;
     feature: DistrictFeature;
@@ -121,7 +127,7 @@ export default function DistrictsArea({ geoData, selectedDivision }: Props) {
         paths: multiPoly,
         strokeColor: "#000",
         strokeOpacity: 0.5,
-        strokeWeight: 3,
+        strokeWeight: 2,
         fillColor: colors[i % colors.length],
         fillOpacity: 0.25,
         map,
@@ -161,7 +167,7 @@ export default function DistrictsArea({ geoData, selectedDivision }: Props) {
           position={mousePos || hoveredDistrict.coords}
           pixelOffset={[0, -30]}
         >
-          <DistrictCard District={hoveredDistrict.feature} />
+          <DistrictCard District={hoveredDistrict.feature} data={data} />
         </InfoWindow>
       )}
     </>

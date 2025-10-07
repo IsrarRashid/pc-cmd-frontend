@@ -10,16 +10,23 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { GoTriangleDown } from "react-icons/go";
+
+export interface ChartType {
+  label: string;
+  value: number;
+}
 
 interface Props {
-  mon: number;
-  tue: number;
-  wed: number;
-  thu: number;
-  fri: number;
-  sat: number;
+  mon?: number;
+  tue?: number;
+  wed?: number;
+  thu?: number;
+  fri?: number;
+  sat?: number;
   heading: string;
   height: number;
+  data: ChartType[];
 }
 
 const MyThinBarChart = ({
@@ -31,48 +38,49 @@ const MyThinBarChart = ({
   sat,
   heading,
   height,
+  data,
 }: Props) => {
-  const data = [
-    {
-      label: "Mon",
-      value: mon,
-    },
-    {
-      label: "Tue",
-      value: tue,
-    },
-    {
-      label: "Wed",
-      value: wed,
-    },
-    {
-      label: "Thu",
-      value: thu,
-    },
-    {
-      label: "Fri",
-      value: fri,
-    },
-    {
-      label: "Sat",
-      value: sat,
-    },
-  ];
+  // const data = [
+  //   {
+  //     label: "Mon",
+  //     value: mon,
+  //   },
+  //   {
+  //     label: "Tue",
+  //     value: tue,
+  //   },
+  //   {
+  //     label: "Wed",
+  //     value: wed,
+  //   },
+  //   {
+  //     label: "Thu",
+  //     value: thu,
+  //   },
+  //   {
+  //     label: "Fri",
+  //     value: fri,
+  //   },
+  //   {
+  //     label: "Sat",
+  //     value: sat,
+  //   },
+  // ];
 
   const theme = useThemeContext();
 
   return (
     <Box
-      className="bg-theme rounded-[14px] border-[#E2E8F0] border-[1px]"
+      className="bg-theme bg-white rounded-[14px] border-[#E2E8F0] border-[1px]"
       p="5"
     >
       <Flex justify="between" align="center" className="mb-[30px]">
-        <Heading className="!font-semibold" size="3">
+        <Heading weight="medium" className="text-[1.563rem]">
           {heading}
         </Heading>
-        {/* <Flex>
+        <Flex>
           In this Week <GoTriangleDown size={21} />
-        </Flex> */}
+        </Flex>
       </Flex>
       <ResponsiveContainer width="100%" height={height}>
         <BarChart
@@ -80,22 +88,22 @@ const MyThinBarChart = ({
           height={300}
           data={data}
           margin={{
-            left: -20,
+            left: -5,
             right: 10,
             bottom: -10,
           }}
-          barSize={10}
+          barSize={25}
         >
           <XAxis
             dataKey="label"
             scale="point"
             padding={{ left: 30, right: 30 }}
           />
-          <YAxis />
+          <YAxis tickFormatter={(value) => `${value} T`} />
           <Tooltip
             contentStyle={{
               backgroundColor:
-                theme.appearance === "light" ? "#aa3c31" : "#292932", // Background color of the tooltip
+                theme.appearance === "light" ? "#1E1B39" : "#292932", // Background color of the tooltip
               border: "0px", // Border styling
               borderRadius: "20px", // Rounded corners
               padding: "10px",
@@ -118,7 +126,7 @@ const MyThinBarChart = ({
             stroke="#44444F"
             strokeWidth={2}
           />
-          <Bar dataKey="value" fill="#aa3c31" radius={100} />
+          <Bar dataKey="value" fill="#EAA64D" radius={[100, 100, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </Box>

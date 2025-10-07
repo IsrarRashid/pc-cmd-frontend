@@ -1,4 +1,4 @@
-import { DASHBOARD_API } from "./APIs";
+import { DASHBOARD_API, PRODUCTION_DASHBOARD_API } from "./APIs";
 import Home from "./components/home/Home";
 
 interface District {
@@ -41,7 +41,7 @@ export interface Dashboard {
   };
   divisions: Division[];
   stockIndicator: {
-    enoughStockAvailable: false;
+    enoughStockAvailable: boolean;
     percent: number;
   };
   wheatStats: {
@@ -56,12 +56,99 @@ export interface Dashboard {
   ];
 }
 
+///////////////////////Production Dashboard Interface
+
+export interface DistrictProduction {
+  districtId: number;
+  districtName: string;
+  totalProduction: number;
+  seasons: null;
+}
+export interface DivisionProduction {
+  divisionId: number;
+  divisionName: string;
+  totalProduction: number;
+  districts: DistrictProduction[];
+}
+
+export interface Province {
+  provinceId: number;
+  provinceName: string;
+  totalProduction: number;
+  divisions: DivisionProduction[];
+}
+
+export interface CountryProduction {
+  countryName: string;
+  provinces: Province[];
+}
+
+export interface Tracking {
+  id: number;
+  vehicleNumber: string;
+  driverName: string;
+  driverContact: string;
+  startDate: string;
+  endDate: string;
+  quantity: number;
+  distanceKm: number;
+  coveredDistance: number;
+  start_lat: number;
+  start_long: number;
+  end_lat: number;
+  end_long: number;
+}
+
+// Define types clearly
+export interface DataPoint {
+  date: string;
+  quantity: number;
+}
+
+export interface SupplyChain {
+  provinceId: number;
+  provinceName: string;
+  dataPoints: DataPoint[];
+}
+
+export interface ProductionDashboard {
+  countryProduction: CountryProduction;
+  tracking: Tracking[];
+  topSupplyChains: SupplyChain[];
+  seasonCycle: {
+    totalProduction: number;
+    punjabProduction: number;
+    sindhProduction: number;
+    balochistanProduction: number;
+    kpkProduction: number;
+    punjabPercentage: number;
+    sindhPercentage: number;
+    balochistanPercentage: number;
+    kpkPercentage: number;
+  };
+}
+
 const HomePage = async () => {
-  const res = await fetch(process.env.BACKEND_URL + DASHBOARD_API, {
-    next: { revalidate: 10 }, // refresh data every 60 seconds
+  const res = await fetch(`${process.env.BACKEND_URL}${DASHBOARD_API}`, {
+    cache: "no-store",
   });
+
+  const res2 = await fetch(
+    `${process.env.BACKEND_URL}${PRODUCTION_DASHBOARD_API}?productId=1`,
+    { cache: "no-store" }
+  );
+
   const dashboardData: Dashboard = await res.json();
-  return <Home dashboardData={dashboardData} />;
+  const productionDashboardData: ProductionDashboard = await res2.json();
+  console.log("dashboardData", dashboardData);
+  console.log("productionDashboardData", productionDashboardData);
+
+  return (
+    <Home
+      dashboardData={dashboardData}
+      productionDashboardData={productionDashboardData}
+    />
+  );
 };
 
 export default HomePage;

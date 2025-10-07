@@ -4,6 +4,7 @@ import Select, {
   ActionMeta,
   GroupBase,
   MultiValue,
+  PropsValue,
   SingleValue,
   StylesConfig,
 } from "react-select";
@@ -31,6 +32,7 @@ interface Props {
   singleSelectStyles?: StylesConfig<OptionType, false, GroupBase<OptionType>>;
   menuPlacement?: "auto" | "bottom" | "top";
   maxHeight?: number;
+  defaultValue?: PropsValue<OptionType>;
 }
 
 export type OptionType = { value: string; label: string };
@@ -56,6 +58,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
       singleSelectStyles,
       menuPlacement = "auto",
       maxHeight = 43 * 6,
+      defaultValue,
     },
     _ref
   ) => {
@@ -298,6 +301,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
         options={options}
         name={id}
         id={id}
+        defaultValue={defaultValue}
         isClearable={isClearable}
         isSearchable={isSearchable}
         isDisabled={isDisabled}
@@ -316,6 +320,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
         options={options}
         name={id}
         id={id}
+        defaultValue={defaultValue}
         isMulti={isMulti}
         isClearable={isClearable}
         isSearchable={isSearchable}
@@ -335,6 +340,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
         options={options}
         name={id}
         id={id}
+        defaultValue={defaultValue}
         isClearable={isClearable}
         isSearchable={isSearchable}
         isDisabled={isDisabled}

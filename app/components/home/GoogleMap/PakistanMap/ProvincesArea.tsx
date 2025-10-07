@@ -3,6 +3,7 @@
 import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ProvinceCard from "../Cards/ProvinceCard";
+import { Province } from "@/app/page";
 
 // --- Interfaces ---
 export interface ProvinceFeature {
@@ -38,6 +39,7 @@ interface Props {
   geoData: GeoJSONProvinces;
   selectedProvince?: ProvinceFeature | null;
   onProvinceClick?: (province: ProvinceFeature) => void;
+  data: Province[];
 }
 
 const colors = [
@@ -54,6 +56,7 @@ export default function ProvincesArea({
   geoData,
   onProvinceClick,
   selectedProvince,
+  data,
 }: Props) {
   const [hoveredProvince, setHoveredProvince] = useState<{
     coords: google.maps.LatLngLiteral;
@@ -179,7 +182,7 @@ export default function ProvincesArea({
           position={mousePos || hoveredProvince.coords}
           pixelOffset={[0, -30]}
         >
-          <ProvinceCard Province={hoveredProvince.feature} />
+          <ProvinceCard Province={hoveredProvince.feature} data={data} />
         </InfoWindow>
       )}
     </>
