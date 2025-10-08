@@ -124,13 +124,29 @@ export default function ProvincesArea({
       const isSelected =
         selectedProvince?.properties.GID_1 === feature.properties.GID_1;
 
+      // Match province by name or ID
+      const provinceData = data.find(
+        (p) =>
+          p.provinceName.toLowerCase() ===
+          feature.properties.NAME_1.toLowerCase()
+      );
+      // Determine color based on totalProduction
+      let fillColor = "#ccc"; // default gray if no data
+
+      if (provinceData) {
+        fillColor =
+          provinceData.totalProduction > 0
+            ? "#32CD32" // bright green
+            : "#FF6347"; // red for zero or negative
+      }
       const polygon = new google.maps.Polygon({
         paths: multiPoly,
         // strokeColor: colors[i % colors.length],
         strokeColor: "#000",
         strokeOpacity: 0.7,
         strokeWeight: 3,
-        fillColor: colors[i % colors.length],
+        // fillColor: colors[i % colors.length],
+        fillColor,
         fillOpacity: isSelected ? 0 : 0.35, // hide fill if selected
         clickable: !isSelected, // disable further clicks if selected
         map,

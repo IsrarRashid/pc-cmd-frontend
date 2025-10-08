@@ -23,7 +23,7 @@ import MegaMenu from "./MegaMenu";
 
 const Navbar = () => {
   return (
-    <nav className="py-2.5 px-[25px] bg-primary">
+    <nav className="py-1 px-[25px] bg-primary">
       <Flex align="center" justify="between" gap="2">
         <Box>
           <div className="flex items-center gap-[22px]">
@@ -31,14 +31,14 @@ const Navbar = () => {
               <Image
                 className="rounded-full"
                 src="/images/logo-white.png"
-                width={61}
-                height={61}
-                style={{ width: "61px", height: "61px" }}
+                width={40}
+                height={40}
+                style={{ width: "40px", height: "40px" }}
                 alt="logo"
               />
             </Link>
             <Flex align="center" className="!gap-[0.875rem]">
-              <Heading size="6" className="text-white">
+              <Heading size="5" className="text-white">
                 PC & CMD
               </Heading>
               <Dialog.Root>
@@ -141,7 +141,7 @@ const AuthStatus = () => {
   if (status === "unauthenticated")
     return (
       <Link
-        className={`nav-link bg-theme ${
+        className={`nav-link bg-theme bg-white rounded-lg p-1 ${
           theme.appearance === "dark" ? "!text-white" : ""
         }`}
         href="/signin"

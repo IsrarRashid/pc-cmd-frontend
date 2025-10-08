@@ -43,6 +43,8 @@ import CustomLineChart, {
 import { DivisionProduction, ProductionDashboard, Province } from "@/app/page";
 import TrackingArea from "./TrackingArea";
 import MapWrapper from "./MapWrapper";
+import { MdFullscreen } from "react-icons/md";
+import { RiFullscreenExitFill } from "react-icons/ri";
 
 const PakistanMap = ({
   productionDashboardData,
@@ -257,6 +259,31 @@ const PakistanMap = ({
   //   { label: "Fri", redLine: 18, greenLine: 22, blueLine: 16, cyanLine: 12, orangeLine: 20 },
   // ];
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    // Listen for fullscreen changes
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    const wrapper = document.getElementById("map-wrapper");
+    if (!document.fullscreenElement) {
+      wrapper?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
   return (
     <div className="relative w-full h-full">
       <div id="map-wrapper" className="relative w-full h-full mb-3">
@@ -431,7 +458,7 @@ const PakistanMap = ({
                       onClick={() =>
                         handleProvinceSelect(province.provinceName)
                       }
-                      className="!bg-transparent hover:!bg-gray-200 !transition-colors !duration-200 !w-full !h-full !text-black !inline-block !py-1"
+                      className="!bg-transparent hover:!bg-gray-200 !transition-colors !duration-200 !w-full !h-full !text-black !inline-block !py-1 !font-normal"
                     >
                       <Flex justify="between" gap="2">
                         <Text>{province.provinceName}</Text>
@@ -464,25 +491,75 @@ const PakistanMap = ({
             </Box>
           )}
           {selectedProvince && selectedDivision && (
-            <Box className="w-[277px] !bg-white !rounded-[10px] border-[1px] border-[#E6E6E6] pt-[7px]">
+            <Box className="w-full !bg-white !rounded-[10px] border-[1px] border-[#E6E6E6] pt-[7px]">
               <Box className="py-[7px] px-3.5 bg-[#D9ECFF]">
                 <Text as="p" align="center" weight="medium">
-                  {selectedDivision && selectedDivision.properties.NAME_2}{" "}
-                  {selectedDivision && "Division"}{" "}
-                  {specificDivision?.totalProduction || 0})
+                  Production, Consumption & Deficit
                 </Text>
               </Box>
               <Box className="py-[7px] px-3.5">
-                {selectedDivision &&
-                  specificProvince &&
-                  specificDivision?.districts.map((district) => (
-                    <Flex key={district.districtName} justify="between" gap="2">
-                      <Text>{district.districtName}</Text>
-                      <Text>{district.totalProduction} T</Text>
-                    </Flex>
-                  ))}
+                <Table.Root>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeaderCell>Division</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>
+                        Production
+                      </Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>
+                        Consumption
+                      </Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Deficit</Table.ColumnHeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.RowHeaderCell>Lahore</Table.RowHeaderCell>
+                      <Table.Cell>1020</Table.Cell>
+                      <Table.Cell>19134</Table.Cell>
+                      <Table.Cell>-18114</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.RowHeaderCell>Lahore</Table.RowHeaderCell>
+                      <Table.Cell>1020</Table.Cell>
+                      <Table.Cell>19134</Table.Cell>
+                      <Table.Cell>-18114</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.RowHeaderCell>Lahore</Table.RowHeaderCell>
+                      <Table.Cell>1020</Table.Cell>
+                      <Table.Cell>19134</Table.Cell>
+                      <Table.Cell>-18114</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.RowHeaderCell>Lahore</Table.RowHeaderCell>
+                      <Table.Cell>1020</Table.Cell>
+                      <Table.Cell>19134</Table.Cell>
+                      <Table.Cell>-18114</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table.Root>
               </Box>
             </Box>
+            // <Box className="w-[277px] !bg-white !rounded-[10px] border-[1px] border-[#E6E6E6] pt-[7px]">
+            //   <Box className="py-[7px] px-3.5 bg-[#D9ECFF]">
+            //     <Text as="p" align="center" weight="medium">
+            //       {selectedDivision && selectedDivision.properties.NAME_2}{" "}
+            //       {selectedDivision && "Division"} (
+            //       {specificDivision?.totalProduction || 0})
+            //     </Text>
+            //   </Box>
+            //   <Box className="py-[7px] px-3.5">
+            //     {selectedDivision &&
+            //       specificProvince &&
+            //       specificDivision?.districts.map((district) => (
+            //         <Flex key={district.districtName} justify="between" gap="2">
+            //           <Text>{district.districtName}</Text>
+            //           <Text>{district.totalProduction} T</Text>
+            //         </Flex>
+            //       ))}
+            //   </Box>
+            // </Box>
           )}
         </div>
         <div className="absolute mb-3 right-14 bottom-0 z-10 w-[95%]">
@@ -496,14 +573,14 @@ const PakistanMap = ({
           </Flex>
         </div>
         <button
-          className="absolute top-3 right-3 z-20 bg-white p-2 rounded shadow"
-          onClick={() => {
-            const wrapper = document.getElementById("map-wrapper");
-            if (!document.fullscreenElement) wrapper?.requestFullscreen();
-            else document.exitFullscreen();
-          }}
+          className="absolute top-3 right-3 z-20 bg-white p-1 rounded shadow"
+          onClick={toggleFullscreen}
         >
-          Toggle Fullscreen
+          {isFullscreen ? (
+            <RiFullscreenExitFill size={24} />
+          ) : (
+            <MdFullscreen size={24} />
+          )}
         </button>
         <APIProvider
           apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string}

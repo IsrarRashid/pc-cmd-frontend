@@ -36,7 +36,7 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
       <Header show={show} setShow={setShow} />
       <div
         className={`
-    mb-3 transition-all duration-500 ease-in-out overflow-hidden
+    mb-2 transition-all duration-500 ease-in-out overflow-hidden
     ${show ? "h-[310px] opacity-100" : "h-0 opacity-0"}
   `}
       >

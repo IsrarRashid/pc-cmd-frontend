@@ -131,12 +131,28 @@ export default function DivisionsArea({
     divisionCoords.forEach((multiPoly, i) => {
       const divFeature = filteredDivisions[i];
 
+      // Match division by name or ID
+      const divisionData = data?.find(
+        (p) =>
+          p.divisionName.toLowerCase() ===
+          divFeature.properties.NAME_2.toLowerCase()
+      );
+      // Determine color based on totalProduction
+      let fillColor = "#ccc"; // default gray if no data
+
+      if (divisionData) {
+        fillColor =
+          divisionData.totalProduction > 0
+            ? "#32CD32" // bright green
+            : "#FF6347"; // red for zero or negative
+      }
+
       const polygon = new google.maps.Polygon({
         paths: multiPoly,
         strokeColor: "#000",
         strokeOpacity: 0.5,
         strokeWeight: 2,
-        fillColor: colors[i % colors.length],
+        fillColor,
         fillOpacity:
           selectedDivision?.properties.NAME_2 === divFeature.properties.NAME_2
             ? 0 // transparent if selected for districts

@@ -123,12 +123,32 @@ export default function DistrictsArea({
     const polygons: google.maps.Polygon[] = [];
 
     districtCoords.forEach((multiPoly, i) => {
+      // ✅ get the current GeoJSON district feature
+      const feature = filteredDistricts[i];
+
+      // ✅ match district name from API data with GeoJSON feature
+      const districtData = data?.find(
+        (d) =>
+          d.districtName.toLowerCase() ===
+          feature.properties.NAME_3.toLowerCase()
+      );
+
+      // Determine fill color
+      let fillColor = "#ccc"; // default gray
+      if (districtData) {
+        fillColor =
+          districtData.totalProduction > 0
+            ? "#32CD32" // green if production > 0
+            : "#FF6347"; // red if 0 or missing
+      }
+
       const polygon = new google.maps.Polygon({
         paths: multiPoly,
         strokeColor: "#000",
         strokeOpacity: 0.5,
         strokeWeight: 2,
-        fillColor: colors[i % colors.length],
+        // fillColor: colors[i % colors.length],
+        fillColor,
         fillOpacity: 0.25,
         map,
       });
@@ -158,7 +178,7 @@ export default function DistrictsArea({
     });
 
     return () => polygons.forEach((p) => p.setMap(null));
-  }, [map, districtCoords, filteredDistricts, colors]);
+  }, [map, districtCoords, filteredDistricts, data]);
 
   return (
     <>

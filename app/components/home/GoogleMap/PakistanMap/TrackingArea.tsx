@@ -200,6 +200,12 @@ const TrackingArea = ({ data }: { data: Tracking[] }) => {
                         ).toFixed(1)}
                         %
                       </div>
+                      <div>
+                        Start Date: {new Date(m.track.startDate).toDateString()}
+                      </div>
+                      <div>
+                        End Date: {new Date(m.track.endDate).toDateString()}
+                      </div>
                     </div>
                   </InfoWindow>
                 )}
