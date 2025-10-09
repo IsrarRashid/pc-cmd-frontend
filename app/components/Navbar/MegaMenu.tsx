@@ -6,24 +6,25 @@ import {
   Flex,
   Heading,
   IconButton,
+  Link,
   Text,
 } from "@radix-ui/themes";
+import { ReactNode, useState } from "react";
 import {
   FiArchive,
   FiAward,
   FiBookOpen,
-  FiCrosshair,
   FiPackage,
   FiSunrise,
   FiTarget,
-  FiUserCheck,
   FiYoutube,
 } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
+import ActionButton from "../Form/ActionButton";
+import CountryForm from "./forms/CountryForm";
 import Form from "./forms/Form";
 import ProductForm from "./forms/ProductForm";
-import { ReactNode, useState } from "react";
-import ProductionForm from "./forms/ProductionForm";
+import ProvinceForm from "./forms/ProvinceForm";
 
 export interface MegaMenuTile {
   label: string;
@@ -89,32 +90,32 @@ const MegaMenu = () => {
     },
   ];
 
-  const productData: MegaMenuTile[] = [
-    {
-      label: "Add Product",
-      description: "Add product Data",
-      icon: <FiAward className="text-primary" size={24} />,
-      isBadge: false,
-    },
-    {
-      label: "Add Production",
-      description: "Add Production Data",
-      icon: <FiUserCheck className="text-primary" size={24} />,
-      isBadge: false,
-    },
-    {
-      label: "Add Product Seasons",
-      description: "Add Product Seasons",
-      icon: <FiCrosshair className="text-primary" size={24} />,
-      isBadge: false,
-    },
-    {
-      label: "Affected Areas",
-      description: "Add Affected Areas Data",
-      icon: <FiUserCheck className="text-primary" size={24} />,
-      isBadge: true,
-    },
-  ];
+  // const productData: MegaMenuTile[] = [
+  //   {
+  //     label: "Add Product",
+  //     description: "Add product Data",
+  //     icon: <FiAward className="text-primary" size={24} />,
+  //     isBadge: false,
+  //   },
+  //   {
+  //     label: "Add Production",
+  //     description: "Add Production Data",
+  //     icon: <FiUserCheck className="text-primary" size={24} />,
+  //     isBadge: false,
+  //   },
+  //   {
+  //     label: "Add Product Seasons",
+  //     description: "Add Product Seasons",
+  //     icon: <FiCrosshair className="text-primary" size={24} />,
+  //     isBadge: false,
+  //   },
+  //   {
+  //     label: "Affected Areas",
+  //     description: "Add Affected Areas Data",
+  //     icon: <FiUserCheck className="text-primary" size={24} />,
+  //     isBadge: true,
+  //   },
+  // ];
 
   const getStartedData = [
     "Punjab",
@@ -274,9 +275,16 @@ const MegaMenu = () => {
         <Text as="p" size="2" weight="medium" className="text-primary" mb="4">
           Product
         </Text>
-        {productData.map((d, i) => (
-          <ProductForm tileInfo={d} />
-        ))}
+        <ProductForm />
+        <Link href="/production-consumption/list">
+          <ActionButton
+            name="Production / Consumption"
+            icon={<FiAward className="text-primary" size={24} />}
+            description="Production / Consumption Data"
+          />
+        </Link>
+        <CountryForm />
+        <ProvinceForm />
       </Box>
       <Box>
         <Text as="p" size="2" weight="medium" className="text-primary" mb="4">

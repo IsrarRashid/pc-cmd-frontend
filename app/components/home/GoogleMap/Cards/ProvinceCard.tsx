@@ -1,7 +1,5 @@
-import { Box, Flex, Text } from "@radix-ui/themes";
-import { DivisionFeature } from "../PakistanMap/DivisionsArea";
-import divisions from "@/public/data/gadm41_PAK/gadm41_PAK_2.json";
 import { Province } from "@/app/page";
+import { Box, Flex, Text } from "@radix-ui/themes";
 
 interface Props {
   Province: {

@@ -6,6 +6,7 @@ import {
   DropdownMenu,
   Flex,
   Heading,
+  IconButton,
   Text,
   useThemeContext,
 } from "@radix-ui/themes";
@@ -43,12 +44,18 @@ const Navbar = () => {
               </Heading>
               <Dialog.Root>
                 <Dialog.Trigger>
-                  <Avatar
-                    src="/icons/arrow-right-01.svg"
-                    fallback="arrow"
-                    className="!w-[22px] !h-[22px] bg-[rgba(255,255,255,0.1)]"
+                  <IconButton
+                    className="!bg-[rgba(255,255,255,0.1)]"
                     radius="full"
-                  />
+                  >
+                    <Image
+                      src="/icons/arrow-right-01.svg"
+                      alt="arrow-right"
+                      width={22}
+                      height={22}
+                      className="!w-[22px] !h-[22px] "
+                    />
+                  </IconButton>
                 </Dialog.Trigger>
 
                 <Dialog.Content

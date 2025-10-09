@@ -42,15 +42,15 @@ interface Props {
   data: Province[];
 }
 
-const colors = [
-  "#1E90FF",
-  "#32CD32",
-  "#FFD700",
-  "#FF6347",
-  "#9370DB",
-  "#20B2AA",
-  "#FF8C00",
-];
+// const colors = [
+//   "#1E90FF",
+//   "#32CD32",
+//   "#FFD700",
+//   "#FF6347",
+//   "#9370DB",
+//   "#20B2AA",
+//   "#FF8C00",
+// ];
 
 export default function ProvincesArea({
   geoData,
@@ -131,7 +131,7 @@ export default function ProvincesArea({
           feature.properties.NAME_1.toLowerCase()
       );
       // Determine color based on totalProduction
-      let fillColor = "#ccc"; // default gray if no data
+      let fillColor = "rgba(0,0,0,0)"; // default gray if no data #ccc
 
       if (provinceData) {
         fillColor =
@@ -189,6 +189,7 @@ export default function ProvincesArea({
     selectedProvince,
     onProvinceClick,
     fitProvinceBounds,
+    data,
   ]);
 
   return (

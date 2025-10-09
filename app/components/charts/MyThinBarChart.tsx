@@ -29,17 +29,7 @@ interface Props {
   data: ChartType[];
 }
 
-const MyThinBarChart = ({
-  mon,
-  tue,
-  wed,
-  thu,
-  fri,
-  sat,
-  heading,
-  height,
-  data,
-}: Props) => {
+const MyThinBarChart = ({ heading, height, data }: Props) => {
   // const data = [
   //   {
   //     label: "Mon",

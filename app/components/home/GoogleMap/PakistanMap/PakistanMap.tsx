@@ -1,9 +1,16 @@
 "use client";
 
+import CustomSelect, {
+  defaultOption,
+} from "@/app/components/Form/CustomSelect";
+import MyThinBarChart, {
+  ChartType,
+} from "@/app/components/charts/MyThinBarChart";
+import { DivisionProduction, ProductionDashboard, Province } from "@/app/page";
 import { devmap } from "@/app/utils/utils";
 import pakistanGeo from "@/public/data/gadm41_PAK/gadm41_PAK_0.json";
 import provinces from "@/public/data/gadm41_PAK/gadm41_PAK_1.json";
-import divisions from "@/public/data/gadm41_PAK/gadm41_PAK_2.json";
+import oldDivisions from "@/public/data/gadm41_PAK/gadm41_PAK_2.json";
 import districts from "@/public/data/gadm41_PAK/gadm41_PAK_3.json";
 import * as Accordion from "@radix-ui/react-accordion";
 import {
@@ -17,34 +24,68 @@ import {
   Text,
 } from "@radix-ui/themes";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import classnames from "classnames";
 import Image from "next/image";
-import DistrictsArea, { GeoJSONDistricts } from "./DistrictsArea";
-import PakistanArea, { GeoJSONPakistan } from "./PakistanArea";
-import ProvincesArea, {
-  ProvinceFeature,
-  GeoJSONProvinces,
-} from "./ProvincesArea";
+import { useEffect, useMemo, useState } from "react";
+import { IoChevronDownOutline } from "react-icons/io5";
+import { MdFullscreen } from "react-icons/md";
+import { RiFullscreenExitFill } from "react-icons/ri";
+import CustomLineChart, {
+  LineChartData,
+} from "../../../charts/CustomLineChart";
 import DivisionsArea, {
   DivisionFeature,
   GeoJSONDivisions,
 } from "./DivisionsArea";
-import { useEffect, useMemo, useState } from "react";
-import { IoChevronDownOutline } from "react-icons/io5";
-import classnames from "classnames";
-import CustomSelect, {
-  defaultOption,
-} from "@/app/components/Form/CustomSelect";
-import MyThinBarChart, {
-  ChartType,
-} from "@/app/components/charts/MyThinBarChart";
-import CustomLineChart, {
-  LineChartData,
-} from "../../../charts/CustomLineChart";
-import { DivisionProduction, ProductionDashboard, Province } from "@/app/page";
-import TrackingArea from "./TrackingArea";
 import MapWrapper from "./MapWrapper";
-import { MdFullscreen } from "react-icons/md";
-import { RiFullscreenExitFill } from "react-icons/ri";
+import ProvincesArea, {
+  GeoJSONProvinces,
+  ProvinceFeature,
+} from "./ProvincesArea";
+import DistrictsArea, { GeoJSONDistricts } from "./DistrictsArea";
+import TrackingArea from "./TrackingArea";
+import PakistanArea, { GeoJSONPakistan } from "./PakistanArea";
+
+//========= for Adding two more divisions in punjab division
+const punjabDistricts = districts.features.filter(
+  (f) => f.properties.NAME_1 === "Punjab"
+);
+
+const extraDivisions = punjabDistricts
+  .filter(
+    (d) => d.properties.NAME_3 === "Gujrat" || d.properties.NAME_3 === "Sahiwal"
+  )
+  .map((d) => ({
+    ...d,
+    properties: {
+      ...d.properties,
+      NAME_2: d.properties.NAME_3,
+      TYPE_2: "Division",
+    },
+  }));
+
+const punjabDivisions = oldDivisions.features.filter(
+  (f) => f.properties.NAME_1 === "Punjab"
+);
+
+const punjabDivisionsFixed = [...punjabDivisions, ...extraDivisions];
+
+const divisions = {
+  ...oldDivisions,
+  features: [
+    ...oldDivisions.features.filter((f) => f.properties.NAME_1 !== "Punjab"),
+    ...punjabDivisionsFixed,
+  ],
+};
+
+//========= for updateing oldDivisions boundary punjab division
+// const multanFeature = oldDivisions.features.find(
+//   (f) => f.properties.NAME_2 === "Multan"
+// );
+
+// const sahiwalFeature = punjabDistricts.find(
+//   (d) => d.properties.NAME_3 === "Sahiwal"
+// );
 
 const PakistanMap = ({
   productionDashboardData,
@@ -74,7 +115,7 @@ const PakistanMap = ({
         );
       setSpecificProvince(specificProvince);
     }
-  }, [selectedProvince]);
+  }, [selectedProvince, productionDashboardData]);
 
   useEffect(() => {
     if (selectedDivision && specificProvince) {
@@ -148,41 +189,6 @@ const PakistanMap = ({
       label: district.districtName,
     };
   });
-
-  const data = [
-    {
-      id: 0,
-      name: "name1",
-      capacity: "capacity1",
-      percentageUsed: "40%",
-      count: 10,
-      sales: 20,
-    },
-    {
-      id: 1,
-      name: "name2",
-      capacity: "capacity2",
-      percentageUsed: "40%",
-      count: 50,
-      sales: 60,
-    },
-    {
-      id: 2,
-      name: "name3",
-      capacity: "capacity3",
-      percentageUsed: "40%",
-      count: 90,
-      sales: 110,
-    },
-    {
-      id: 3,
-      name: "name4",
-      capacity: "capacity4",
-      percentageUsed: "40%",
-      count: 50,
-      sales: 40,
-    },
-  ];
 
   // const lineChartData = data?.map((d) => ({
   //   label: d.name,

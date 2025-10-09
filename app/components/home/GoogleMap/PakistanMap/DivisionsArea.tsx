@@ -138,7 +138,7 @@ export default function DivisionsArea({
           divFeature.properties.NAME_2.toLowerCase()
       );
       // Determine color based on totalProduction
-      let fillColor = "#ccc"; // default gray if no data
+      let fillColor = "rgba(0,0,0,0)"; // default gray if no data #ccc
 
       if (divisionData) {
         fillColor =
@@ -195,6 +195,7 @@ export default function DivisionsArea({
     colors,
     selectedDivision,
     onDivisionClick,
+    data,
   ]);
 
   return (

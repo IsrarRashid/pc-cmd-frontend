@@ -1,3 +1,7 @@
 export const LOGIN_API = "/api/Auth/login";
 export const DASHBOARD_API = "/api/Dashboard/summary";
 export const PRODUCTION_DASHBOARD_API = "/api/ProductionDashboard/Dashboard";
+export const PRODUCT_API = "/api/Product";
+export const PRODUCTION_API = "/api/Production";
+export const COUNTRY_API = "/api/Countary";
+export const PROVINCE_API = "/api/Province";

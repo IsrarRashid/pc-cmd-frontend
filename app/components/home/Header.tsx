@@ -61,6 +61,7 @@ const Header = ({ show, setShow }: Props) => {
                 alt="filter"
                 width={15}
                 height={15}
+                style={{ width: "15px", height: "15px" }}
               />
               Filter
             </Button>

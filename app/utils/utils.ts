@@ -1,5 +1,5 @@
 // "build": "next build --turbopack",
-    // "start": "node server.js",
+// "start": "node server.js",
 
 export const devmap = true;
 
@@ -15,3 +15,7 @@ export function getRandomColor() {
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
+export const createdMessage = "Created Successfully";
+export const updatedMessage = "Updated Successfully";
+export const deleteMessage = "Deleted Successfully";

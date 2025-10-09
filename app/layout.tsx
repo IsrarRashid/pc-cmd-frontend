@@ -1,10 +1,11 @@
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import NavbarToggle from "./components/NavbarToggle";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import ToastContainers from "./components/ToastContainers";
+import "./globals.css";
+import NavbarToggle from "./components/Navbar/NavbarToggle";
+import QueryClientProvider from "./QueryClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +33,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeSwitcher>
-          <NavbarToggle />
-          <main className="p-5">{children}</main>
+          <QueryClientProvider>
+            <NavbarToggle />
+            <main className="p-5">{children}</main>
+          </QueryClientProvider>
         </ThemeSwitcher>
         <ToastContainers />
       </body>
