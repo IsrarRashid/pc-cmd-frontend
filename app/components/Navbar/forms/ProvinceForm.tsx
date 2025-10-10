@@ -45,7 +45,6 @@ const ProvinceForm = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<ProvinceInput>({
     resolver: zodResolver(schema),

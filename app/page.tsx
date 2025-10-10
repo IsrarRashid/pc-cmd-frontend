@@ -1,4 +1,5 @@
 import { DASHBOARD_API, PRODUCTION_DASHBOARD_API } from "./APIs";
+import DashboardWrapper from "./components/DashboardWrapper";
 import Home from "./components/home/Home";
 
 interface District {
@@ -62,12 +63,18 @@ export interface DistrictProduction {
   districtId: number;
   districtName: string;
   totalProduction: number;
+  totalConsumption: number;
+  balance: number;
+  status: string;
   seasons: null;
 }
 export interface DivisionProduction {
   divisionId: number;
   divisionName: string;
   totalProduction: number;
+  totalConsumption: number;
+  balance: number;
+  status: string;
   districts: DistrictProduction[];
 }
 
@@ -75,11 +82,18 @@ export interface Province {
   provinceId: number;
   provinceName: string;
   totalProduction: number;
+  totalConsumption: number;
+  balance: number;
+  status: string;
   divisions: DivisionProduction[];
 }
 
 export interface CountryProduction {
   countryName: string;
+  totalProduction: number;
+  totalConsumption: number;
+  balance: number;
+  status: string;
   provinces: Province[];
 }
 
@@ -128,13 +142,18 @@ export interface ProductionDashboard {
   };
 }
 
-const HomePage = async () => {
+interface Props {
+  searchParams: Promise<{ product: string }>;
+}
+
+const HomePage = async ({ searchParams }: Props) => {
+  const { product } = await searchParams;
   const res = await fetch(`${process.env.BACKEND_URL}${DASHBOARD_API}`, {
     cache: "no-store",
   });
 
   const res2 = await fetch(
-    `${process.env.BACKEND_URL}${PRODUCTION_DASHBOARD_API}?productId=1`,
+    `${process.env.BACKEND_URL}${PRODUCTION_DASHBOARD_API}?productId=${product}`,
     { cache: "no-store" }
   );
 
@@ -144,10 +163,12 @@ const HomePage = async () => {
   console.log("productionDashboardData", productionDashboardData);
 
   return (
-    <Home
-      dashboardData={dashboardData}
-      productionDashboardData={productionDashboardData}
-    />
+    <DashboardWrapper>
+      <Home
+        dashboardData={dashboardData}
+        productionDashboardData={productionDashboardData}
+      />
+    </DashboardWrapper>
   );
 };
 

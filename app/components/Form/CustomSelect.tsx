@@ -98,7 +98,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
         fontSize: "14px",
         border: "none",
         boxShadow: state.isFocused
-          ? "0 0 0 1.5px #0C8CE9"
+          ? "0 0 0 1.5px #0C8CE9" // focus glow
           : "0 0 0 1.5px #eff0f2",
         transition: "all 0.3s",
       }),
@@ -110,6 +110,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
       dropdownIndicator: (base) => ({
         ...base,
         padding: 10.5,
+        color: "#000", // ✅ makes the chevron icon white
       }),
       indicatorSeparator: (base) => ({
         ...base,
@@ -149,10 +150,10 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
           : state.isFocused
           ? "#E4EDEC"
           : "white",
-        color: "#333",
+        color: "#000",
         fontSize: "14px",
         padding: "10px",
-        borderRadius: 7,
+        borderRadius: 0,
         // ✅ Ensure pointer events work
         cursor: "pointer",
         pointerEvents: "auto",
@@ -215,12 +216,12 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
       }),
       placeholder: (base) => ({
         ...base,
-        color: "#545861", // Set the placeholder color
-        fontWeight: 500,
+        color: "#000", // Set the placeholder color
+        fontWeight: 400,
       }),
       singleValue: (base) => ({
         ...base,
-        color: "#1C6BA6",
+        color: "#000",
       }),
       dropdownIndicator: (base) => ({
         ...base,
@@ -260,7 +261,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
       option: (base, state) => ({
         ...base,
         backgroundColor: state.isFocused ? "#E4EDEC" : "white",
-        color: "#333",
+        color: "#000",
         fontSize: "14px",
         padding: "10px",
         borderRadius: 7,
@@ -278,7 +279,7 @@ const CustomSelect = forwardRef<HTMLDivElement, Props>(
           height: "8px",
         },
         "::-webkit-scrollbar-track": {
-          background: "#f1f1f1",
+          background: "f1f1f1",
         },
         "::-webkit-scrollbar-thumb": {
           background: "#22a3bd",

@@ -1,30 +1,95 @@
 "use client";
 
+import { PRODUCTION_API } from "@/app/APIs";
+import apiClient, { AxiosError } from "@/app/services/api-client";
+import { createdMessage } from "@/app/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { Button, Dialog, Flex, Heading, IconButton } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FiAward } from "react-icons/fi";
+import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
 import z from "zod";
 import ActionButton from "../../Form/ActionButton";
+import CustomLabel from "../../Form/CustomLabel";
+import CustomRadixInput from "../../Form/CustomRadixInput";
+import CustomSelect, { OptionType } from "../../Form/CustomSelect";
+import ErrorMessage from "../../Form/ErrorMessage";
+import SubmitButton from "../../Form/SubmitButton";
 
 const schema = z.object({
-  id: z.number().default(0),
-  name: z.string().min(1, { message: "Please add Production Name!" }),
-  description: z.string().default(""),
-  amount: z
+  id: z.number().optional().default(0),
+  productId: z
     .number()
-    .min(1, "Please add Rate!")
+    .min(1, "Please add product!")
     .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), { message: "Please add Rate!" }),
-  icon: z.string().default(""),
-  createdAt: z.string().optional().default(new Date().toISOString()),
-  // createdBy: z.string().optional().min(1, { message: "Please add Created By!" }),
-  createdBy: z.string().optional().default(""),
-  updatedAt: z.string().default(new Date().toISOString()),
-  // updatedBy: z.string().optional().min(1, { message: "Please add Updated By!" }),
-  updatedBy: z.string().optional().default(""),
-  isActive: z.boolean().default(true),
+    .refine((val) => !isNaN(val), { message: "Please add product!" }),
+  countaryId: z
+    .number()
+    .min(1, "Please add countary!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: "Please add country!" }),
+  provinceId: z
+    .number()
+    .min(1, "Please add province!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: "Please add province!" }),
+  divisionId: z
+    .number()
+    .min(1, "Please add division!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: "Please add division!" }),
+  districtId: z
+    .number()
+    .min(1, "Please add district!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: "Please add district!" }),
+  population: z.number().refine((val) => !isNaN(val) && val > 0, {
+    message: "Please add population!",
+  }),
+  productionQuantity: z
+    .number()
+    .min(1, "Please add production quantity!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), {
+      message: "Please add production quantity!",
+    }),
+  consumptionQuantity: z
+    .number()
+    .min(1, "Please add consumption quantity!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), {
+      message: "Please add consumption quantity!",
+    }),
+  unitId: z
+    .number()
+    .min(1, "Please add unit!")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: "Please add unit!" }),
+  createdAt: z.string().min(1, { message: "Please add Created At!" }),
+  createdBy: z.string().min(1, { message: "Please add Created By!" }),
+  updatedAt: z.string().min(1, { message: "Please add Updated At!" }),
+  updatedBy: z.string().min(1, { message: "Please add Updated By!" }),
 });
+
+const defaultValues: ProductionInput = {
+  id: 0,
+  productId: 0,
+  countaryId: 0,
+  provinceId: 0,
+  divisionId: 0,
+  districtId: 0,
+  population: 0,
+  productionQuantity: 0,
+  consumptionQuantity: 0,
+  unitId: 0,
+  createdAt: "",
+  createdBy: "",
+  updatedAt: "",
+  updatedBy: "",
+};
 
 // Output type (what you get after validation)
 export type Production = z.infer<typeof schema>;
@@ -39,247 +104,409 @@ const tileInfo = {
   isBadge: false,
 };
 
-const ProductionForm = () => {
+interface Props {
+  productOptions: OptionType[];
+  countryOptions: OptionType[];
+  provinceOptions: OptionType[];
+  divisionOptions: OptionType[];
+  districtOptions: OptionType[];
+}
+
+const ProductionForm = ({
+  productOptions,
+  countryOptions,
+  provinceOptions,
+  divisionOptions,
+  districtOptions,
+}: Props) => {
   const {
-    // register,
-    // handleSubmit,
+    register,
+    handleSubmit,
+    control,
     formState: { errors },
   } = useForm<ProductionInput>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      id: 0,
-      name: "",
-      description: "",
-      amount: 0,
-      icon: "",
-      createdAt: new Date().toISOString(),
-      createdBy: "",
-      updatedAt: new Date().toISOString(),
-      updatedBy: "",
-      isActive: true,
-    },
+    defaultValues,
   });
   console.log("errors", errors);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const router = useRouter();
 
-  // const onSubmit = async (formData: ProductionInput) => {
-  //   console.log("formData", formData);
-  //   handleCloseDialog();
-  //   const modifiedFormData: ProductionInput = {
-  //     ...formData,
-  //     // UpdateBy: formData.parentId === 0 ? null : formData.parentId,
-  //     updatedAt: new Date().toISOString(),
-  //   };
-  //   try {
-  //     const response = await apiClient({
-  //       method: "POST",
-  //       url: PRODUCT_API,
-  //       data: modifiedFormData,
-  //     });
-  //     console.log("Response:", response);
-  //     router.refresh();
-  //     toast.success(createdMessage);
-  //     handleCloseDialog();
-  //   } catch (err) {
-  //     console.error("Submission error:", err);
-  //     toast.error((err as AxiosError).message);
-  //   }
-  // };
+  const onSubmit = async (formData: ProductionInput) => {
+    console.log("formData", formData);
 
-  // const handleCloseDialog = () => {
-  //   setIsDialogOpen(false);
-  //   console.log("close dialog");
-  // };
+    handleCloseDialog();
+    const modifiedFormData: ProductionInput = {
+      ...formData,
+      // UpdateBy: formData.parentId === 0 ? null : formData.parentId,
+      updatedAt: new Date().toISOString(),
+    };
+    try {
+      const response = await apiClient({
+        method: "POST",
+        url: PRODUCTION_API,
+        data: modifiedFormData,
+      });
+      console.log("Response:", response);
+      router.refresh();
+      toast.success(createdMessage);
+      handleCloseDialog();
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error((err as AxiosError).message);
+    }
+  };
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    console.log("close dialog");
+  };
+
+  // <Link href="/production-consumption/list">
+  //   <ActionButton
+  //     name={tileInfo.label}
+  //     icon={tileInfo.icon}
+  //     description={tileInfo.description}
+  //   />
+  // </Link>
   return (
-    <Link href="/production-consumption/list">
-      <ActionButton
-        name={tileInfo.label}
-        icon={tileInfo.icon}
-        description={tileInfo.description}
-      />
-    </Link>
-    // <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-    //   <Dialog.Trigger>
-    //     <ActionButton
-    //       name="Production / Consumption"
-    //       icon={<FiAward className="text-primary" size={24} />}
-    //       description="Production / Consumption Data"
-    //     />
-    //   </Dialog.Trigger>
+    <Dialog.Root open={isDialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog.Trigger>
+        <ActionButton
+          name={tileInfo.label}
+          icon={tileInfo.icon}
+          description={tileInfo.description}
+        />
+      </Dialog.Trigger>
 
-    //   <Dialog.Content
-    //     size="4"
-    //     className="!py-[15px] !px-[20px] !max-w-[95vw] !w-auto !max-h-[90vh] !overflow-hidden"
-    //   >
-    //     <Dialog.Title>
-    //       <Flex justify="between" align="center" className="!mb-5">
-    //         <Heading as="h6" className="!text-primary !py-2">
-    //           Production / Consumption
-    //         </Heading>
-    //         <Dialog.Close>
-    //           <IconButton
-    //             radius="full"
-    //             className="!w-8 !h-8 !bg-primary/10 !py-2"
-    //           >
-    //             <IoClose className="text-primary" />
-    //           </IconButton>
-    //         </Dialog.Close>
-    //       </Flex>
-    //     </Dialog.Title>
-    //     <Dialog.Description size="2" mb="4" className="!sr-only">
-    //       Make changes to your profile.
-    //     </Dialog.Description>
-    //     <TableTopArea
-    //       heading="Production / Consumption"
-    //       searchTerm={""}
-    //       filteredData={[]}
-    //       data={[]}
-    //     />
-    //     <ScrollArea
-    //       type="auto"
-    //       scrollbars="horizontal"
-    //       style={{
-    //         maxWidth: "100%",
-    //         overflowX: "auto",
-    //         maxHeight: "100vh",
-    //       }}
-    //       className="!max-w-full !overflow-x-auto !rounded-md !border !border-gray-200"
-    //     >
-    //       <TableRoot className="min-w-[1200px]">
-    //         <TableHeader>
-    //           <Table.Row className="!text-white">
-    //             <TableHeading name="id" isFirst={true} />
-    //             <TableHeading name="product" />
-    //             <TableHeading name="countary" />
-    //             <TableHeading name="province" />
-    //             <TableHeading name="division" />
-    //             <TableHeading name="district" />
-    //             <TableHeading name="population" />
-    //             <TableHeading name="productionQuantity" />
-    //             <TableHeading name="consumptionQuantity" />
-    //             <TableHeading name="unitId" />
-    //             <TableHeading name="createdAt" />
-    //             <TableHeading name="updatedAt" />
-    //             <TableHeading name="createdBy" />
-    //             <TableHeading name="updatedBy" />
-    //             <TableHeading name="" />
-    //           </Table.Row>
-    //         </TableHeader>
+      <Dialog.Content
+        size="4"
+        maxWidth="896px"
+        className="!py-[15px] !px-[20px]"
+      >
+        <Dialog.Title>
+          <Flex justify="between" align="center" className="!mb-5">
+            <Heading as="h6" className="!text-primary !py-2">
+              {tileInfo.label}
+            </Heading>
+            <Dialog.Close>
+              <IconButton
+                radius="full"
+                className="!w-8 !h-8 !bg-primary/10 !py-2"
+              >
+                <IoClose className="text-primary" />
+              </IconButton>
+            </Dialog.Close>
+          </Flex>
+        </Dialog.Title>
+        <Dialog.Description size="2" mb="4" className="!sr-only">
+          Make changes to your profile.
+        </Dialog.Description>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 md:grid-cols-3 mb-2.5 items-center gap-[1.25rem]">
+            <CustomLabel
+              inputNode={
+                <>
+                  <Controller
+                    name="productId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        {...field}
+                        options={productOptions} // must be in format { value, label }
+                        closeMenuOnSelect={true}
+                        // Convert between react-select and raw value
+                        value={
+                          productOptions.find(
+                            (opt) =>
+                              opt.value ===
+                              (field.value != null
+                                ? field.value.toString()
+                                : "")
+                          )
+                            ? [
+                                productOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    (field.value != null
+                                      ? field.value.toString()
+                                      : "")
+                                )!,
+                              ]
+                            : null
+                        }
+                        onChangeSingle={(selectedOption) => {
+                          field.onChange(
+                            selectedOption ? Number(selectedOption.value) : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ErrorMessage>{errors.productId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Product
+            </CustomLabel>
+            <CustomLabel
+              inputNode={
+                <>
+                  <Controller
+                    name="countaryId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        {...field}
+                        options={countryOptions} // must be in format { value, label }
+                        closeMenuOnSelect={true}
+                        // Convert between react-select and raw value
+                        value={
+                          countryOptions.find(
+                            (opt) =>
+                              opt.value ===
+                              (field.value != null
+                                ? field.value.toString()
+                                : "")
+                          )
+                            ? [
+                                countryOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    (field.value != null
+                                      ? field.value.toString()
+                                      : "")
+                                )!,
+                              ]
+                            : null
+                        }
+                        onChangeSingle={(selectedOption) => {
+                          field.onChange(
+                            selectedOption ? Number(selectedOption.value) : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ErrorMessage>{errors.countaryId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Country
+            </CustomLabel>
+            <CustomLabel
+              inputNode={
+                <>
+                  <Controller
+                    name="provinceId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        {...field}
+                        options={provinceOptions} // must be in format { value, label }
+                        closeMenuOnSelect={true}
+                        // Convert between react-select and raw value
+                        value={
+                          provinceOptions.find(
+                            (opt) =>
+                              opt.value ===
+                              (field.value != null
+                                ? field.value.toString()
+                                : "")
+                          )
+                            ? [
+                                provinceOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    (field.value != null
+                                      ? field.value.toString()
+                                      : "")
+                                )!,
+                              ]
+                            : null
+                        }
+                        onChangeSingle={(selectedOption) => {
+                          field.onChange(
+                            selectedOption ? Number(selectedOption.value) : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ErrorMessage>{errors.provinceId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Province
+            </CustomLabel>
+            <CustomLabel
+              inputNode={
+                <>
+                  <Controller
+                    name="divisionId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        {...field}
+                        options={divisionOptions} // must be in format { value, label }
+                        closeMenuOnSelect={true}
+                        // Convert between react-select and raw value
+                        value={
+                          divisionOptions.find(
+                            (opt) =>
+                              opt.value ===
+                              (field.value != null
+                                ? field.value.toString()
+                                : "")
+                          )
+                            ? [
+                                divisionOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    (field.value != null
+                                      ? field.value.toString()
+                                      : "")
+                                )!,
+                              ]
+                            : null
+                        }
+                        onChangeSingle={(selectedOption) => {
+                          field.onChange(
+                            selectedOption ? Number(selectedOption.value) : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ErrorMessage>{errors.divisionId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Province
+            </CustomLabel>
+            <CustomLabel
+              inputNode={
+                <>
+                  <Controller
+                    name="districtId"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        {...field}
+                        options={districtOptions} // must be in format { value, label }
+                        closeMenuOnSelect={true}
+                        // Convert between react-select and raw value
+                        value={
+                          districtOptions.find(
+                            (opt) =>
+                              opt.value ===
+                              (field.value != null
+                                ? field.value.toString()
+                                : "")
+                          )
+                            ? [
+                                districtOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    (field.value != null
+                                      ? field.value.toString()
+                                      : "")
+                                )!,
+                              ]
+                            : null
+                        }
+                        onChangeSingle={(selectedOption) => {
+                          field.onChange(
+                            selectedOption ? Number(selectedOption.value) : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ErrorMessage>{errors.districtId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Province
+            </CustomLabel>
+            <CustomLabel
+              inputNode={
+                <>
+                  <CustomRadixInput
+                    type="number"
+                    placeholder="Enter Population"
+                    {...register("population", { valueAsNumber: true })}
+                  />
+                  <ErrorMessage>{errors.population?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Population
+            </CustomLabel>
 
-    //         <Table.Body className="bg-theme !text-sm">
-    //           <Table.Row className="odd:bg-gray-50 even:bg-white hover:!bg-gray-200 transition-colors">
-    //             <TableRowHeaderCell>1</TableRowHeaderCell>
-    //             <Table.Cell>Bahawalnagar</Table.Cell>
-    //             <Table.Cell>12,709,365</Table.Cell>
-    //             <Table.Cell>1020</Table.Cell>
-    //             <Table.Cell>255</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>
-    //               <IconButton className="!bg-transparent">
-    //                 <Image
-    //                   src="/icons/eye.svg"
-    //                   alt="eye"
-    //                   width={20}
-    //                   height={20}
-    //                   className="w-5 h-5"
-    //                 />
-    //               </IconButton>
-    //             </Table.Cell>
-    //           </Table.Row>
-    //           <Table.Row className="odd:bg-gray-50 even:bg-white hover:!bg-gray-200 transition-colors">
-    //             <TableRowHeaderCell>1</TableRowHeaderCell>
-    //             <Table.Cell>Bahawalnagar</Table.Cell>
-    //             <Table.Cell>12,709,365</Table.Cell>
-    //             <Table.Cell>1020</Table.Cell>
-    //             <Table.Cell>255</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>
-    //               <IconButton className="!bg-transparent">
-    //                 <Image
-    //                   src="/icons/eye.svg"
-    //                   alt="eye"
-    //                   width={20}
-    //                   height={20}
-    //                   className="w-5 h-5"
-    //                 />
-    //               </IconButton>
-    //             </Table.Cell>
-    //           </Table.Row>
-    //           <Table.Row className="odd:bg-gray-50 even:bg-white hover:!bg-gray-200 transition-colors">
-    //             <TableRowHeaderCell>1</TableRowHeaderCell>
-    //             <Table.Cell>Bahawalnagar</Table.Cell>
-    //             <Table.Cell>12,709,365</Table.Cell>
-    //             <Table.Cell>1020</Table.Cell>
-    //             <Table.Cell>255</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>
-    //               <IconButton className="!bg-transparent">
-    //                 <Image
-    //                   src="/icons/eye.svg"
-    //                   alt="eye"
-    //                   width={20}
-    //                   height={20}
-    //                   className="w-5 h-5"
-    //                 />
-    //               </IconButton>
-    //             </Table.Cell>
-    //           </Table.Row>
-    //           <Table.Row className="odd:bg-gray-50 even:bg-white hover:!bg-gray-200 transition-colors">
-    //             <TableRowHeaderCell>1</TableRowHeaderCell>
-    //             <Table.Cell>Bahawalnagar</Table.Cell>
-    //             <Table.Cell>12,709,365</Table.Cell>
-    //             <Table.Cell>1020</Table.Cell>
-    //             <Table.Cell>255</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>293</Table.Cell>
-    //             <Table.Cell>
-    //               <IconButton className="!bg-transparent">
-    //                 <Image
-    //                   src="/icons/eye.svg"
-    //                   alt="eye"
-    //                   width={20}
-    //                   height={20}
-    //                   className="w-5 h-5"
-    //                 />
-    //               </IconButton>
-    //             </Table.Cell>
-    //           </Table.Row>
-    //         </Table.Body>
-    //       </TableRoot>
-    //     </ScrollArea>
-    //   </Dialog.Content>
-    // </Dialog.Root>
+            <CustomLabel
+              inputNode={
+                <>
+                  <CustomRadixInput
+                    type="number"
+                    placeholder="Enter Production Quantity"
+                    {...register("productionQuantity", { valueAsNumber: true })}
+                  />
+                  <ErrorMessage>
+                    {errors.productionQuantity?.message}
+                  </ErrorMessage>
+                </>
+              }
+            >
+              Production Quantity
+            </CustomLabel>
+
+            <CustomLabel
+              inputNode={
+                <>
+                  <CustomRadixInput
+                    type="number"
+                    placeholder="Enter Consumption Quantity"
+                    {...register("consumptionQuantity", {
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <ErrorMessage>
+                    {errors.consumptionQuantity?.message}
+                  </ErrorMessage>
+                </>
+              }
+            >
+              Consumption Quantity
+            </CustomLabel>
+
+            <CustomLabel
+              inputNode={
+                <>
+                  <CustomRadixInput
+                    type="number"
+                    placeholder="Enter Unit"
+                    {...register("unitId", { valueAsNumber: true })}
+                  />
+                  <ErrorMessage>{errors.unitId?.message}</ErrorMessage>
+                </>
+              }
+            >
+              Unit
+            </CustomLabel>
+          </div>
+
+          <Flex gap="3" mt="4" justify="between">
+            <Dialog.Close>
+              <Button className="!w-[187px] !h-[41px] !text-primary !py-[0.688em] !px-[1em] !font-bold !bg-[#EFF0F2] !rounded-[5px] !border-[1px] !border-[rgba(239,240,242,0.4)]">
+                Cancel
+              </Button>
+            </Dialog.Close>
+            <SubmitButton>Save Production</SubmitButton>
+          </Flex>
+        </form>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

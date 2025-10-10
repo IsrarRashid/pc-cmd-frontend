@@ -7,7 +7,6 @@ import {
   Label,
   Pie,
   PieChart,
-  PieLabelRenderProps,
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
@@ -36,7 +35,7 @@ export interface ChartType {
   color: string;
 }
 
-const MyPieChart = ({
+const MyPieChartOld = ({
   // mon,
   // tue,
   // wed,
@@ -63,44 +62,6 @@ const MyPieChart = ({
     curr.value > prev.value ? curr : prev
   );
 
-  const RADIAN = Math.PI / 180;
-  console.log(maxEntry);
-  console.log(RADIAN);
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    value, // 👈 get actual value from props
-  }: PieLabelRenderProps) => {
-    const numCx = Number(cx);
-    const numCy = Number(cy);
-    const numMidAngle = Number(midAngle);
-    const numInner = Number(innerRadius);
-    const numOuter = Number(outerRadius);
-    const numValue = Number(value);
-
-    const RADIAN = Math.PI / 180;
-    const radius = numInner + (numOuter - numInner) * 0.2;
-    const x = numCx + radius * Math.cos(-numMidAngle * RADIAN);
-    const y = numCy + radius * Math.sin(-numMidAngle * RADIAN);
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        textAnchor={x > numCx ? "start" : "end"}
-        dominantBaseline="central"
-        fontSize="12"
-        fontWeight="600"
-      >
-        {numValue.toString()}
-      </text>
-    );
-  };
-
   return (
     <Box className="bg-theme rounded-[17px]">
       {header}
@@ -109,9 +70,9 @@ const MyPieChart = ({
           <Tooltip
             contentStyle={{
               backgroundColor:
-                theme.appearance === "light" ? "#002344" : "#292932", // Background color of the tooltip
+                theme.appearance === "light" ? "#aa3c31" : "#292932", // Background color of the tooltip
               border: "0px", // Border styling
-              borderRadius: "18px", // Rounded corners
+              borderRadius: "20px", // Rounded corners
               padding: "10px",
               boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
             }}
@@ -129,21 +90,15 @@ const MyPieChart = ({
           <Pie
             dataKey="value"
             fill="#aa3c31"
-            innerRadius={30}
+            innerRadius={40}
             nameKey="label" // 👈 tell Legend to use "label"
-            outerRadius={50}
+            outerRadius={60}
             paddingAngle={2}
             cornerRadius={3.31}
-            stroke="none"
-            label={renderCustomizedLabel}
-            labelLine={false}
           >
             {data.map((entry) => (
               <Cell key={`cell-${entry.label}`} fill={entry.color} />
             ))}
-
-            {/* ✅ Label for each piece (white value text) */}
-
             {/* Center text */}
             <Label
               content={({ viewBox }) => {
@@ -155,19 +110,13 @@ const MyPieChart = ({
                       y={cy}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      style={{ fontSize: "14px", fill: "#fff" }}
+                      style={{ fontSize: "14px", fill: "#333" }}
                     >
-                      <tspan x={cx} dy="-0.4em" fontSize="18" fontWeight="600">
-                        {data[2].value}
+                      <tspan x={cx} dy="-0.4em" fontSize="20" fontWeight="bold">
+                        {maxEntry.value}
                       </tspan>
-                      <tspan
-                        x={cx}
-                        dy="1.4em"
-                        fontSize="13"
-                        fontWeight="500"
-                        fill="#fff"
-                      >
-                        {data[2].label}
+                      <tspan x={cx} dy="1.2em" fontSize="12" fill="#666">
+                        {maxEntry.label}
                       </tspan>
                     </text>
                   );
@@ -188,4 +137,4 @@ const MyPieChart = ({
   );
 };
 
-export default MyPieChart;
+export default MyPieChartOld;

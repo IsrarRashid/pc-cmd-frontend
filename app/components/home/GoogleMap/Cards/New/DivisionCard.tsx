@@ -1,5 +1,7 @@
 import { DivisionProduction } from "@/app/page";
-import { Box, Flex, Text } from "@radix-ui/themes";
+import { Box, Table, Text } from "@radix-ui/themes";
+import Card from "../../../Card";
+import DivisionPieChartPreview from "../../../DivisionPieChartPreview";
 
 type Props = {
   Division: {
@@ -19,29 +21,71 @@ const DivisionCard = ({ Division, data }: Props) => {
 
   return (
     <>
-      <Box className="w-[277px] !bg-white !rounded-[10px] border-[1px] border-[#E6E6E6] pt-[7px]">
-        <Box className="py-[7px] px-3.5 bg-[#D9ECFF] font-medium">
+      <Card>
+        <Box className="p-3">
+          {/* <Box className="py-[7px] px-3.5 bg-[#D9ECFF] font-medium">
           <Text as="p" align="center">
-            {divisionName} Division
+            {divisionName} Division Analytics
           </Text>
-        </Box>
-        {relatedDistricts && relatedDistricts.length > 0 ? (
-          relatedDistricts.map((district) => (
-            <Box key={district.districtId} className="py-[7px] px-3.5">
-              <Flex justify="between" gap="2">
-                <Text>{district.districtName || ""}</Text>
-                <Text>{district.totalProduction || "No Data Available"} T</Text>
-              </Flex>
-            </Box>
-          ))
-        ) : (
-          <Box className="py-[7px] px-3.5">
-            <Text as="p" align="center">
-              No Data Available
+        </Box> */}
+          <DivisionPieChartPreview heading={`${divisionName} Analytics`} />
+          <Card>
+            <Text
+              as="p"
+              align="center"
+              weight="medium"
+              className="!text-xs !text-white !py-[5px] !px-[10px] !bg-[#002344] !leading-[1.108em] font-sans"
+            >
+              {divisionName} Production, Consumption & Deficit
             </Text>
-          </Box>
-        )}
-      </Box>
+            <Table.Root>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeaderCell className="!bg-[#02325F] !text-[#FEB019] !font-normal !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                    District
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="!bg-[#02325F] !text-[#FEB019] !font-normal !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                    Production
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="!bg-[#02325F] !text-[#FEB019] !font-normal !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                    Consumption
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="!bg-[#02325F] !text-[#FEB019] !font-normal !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                    Deficit
+                  </Table.ColumnHeaderCell>
+                </Table.Row>
+              </Table.Header>
+
+              <Table.Body>
+                {relatedDistricts && relatedDistricts.length > 0 ? (
+                  relatedDistricts.map((district) => (
+                    <Table.Row key={district.districtId}>
+                      <Table.RowHeaderCell className="!text-white !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                        {district.districtName}
+                      </Table.RowHeaderCell>
+                      <Table.Cell className="!text-white !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                        {district.totalProduction}
+                      </Table.Cell>
+                      <Table.Cell className="!text-white !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                        consumption
+                      </Table.Cell>
+                      <Table.Cell className="!text-white !text-xs !py-[5px] !px-[10px] !h-fit leading-[1.108em]">
+                        deficit
+                      </Table.Cell>
+                    </Table.Row>
+                  ))
+                ) : (
+                  <Box className="py-[7px] px-3.5">
+                    <Text as="p" align="center" className="!text-white">
+                      No Data Available
+                    </Text>
+                  </Box>
+                )}
+              </Table.Body>
+            </Table.Root>
+          </Card>
+        </Box>
+      </Card>
     </>
   );
 };

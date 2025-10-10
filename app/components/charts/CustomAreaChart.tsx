@@ -4,9 +4,9 @@ import { ProductionDashboard } from "@/app/page";
 import { Box, Flex, useThemeContext } from "@radix-ui/themes";
 import { ReactNode } from "react";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -31,7 +31,7 @@ type Props = {
   productionDashboardData: ProductionDashboard;
 };
 
-const CustomLineChart = ({
+const CustomAreaChart = ({
   data,
   heading,
   height,
@@ -39,6 +39,15 @@ const CustomLineChart = ({
   productionDashboardData,
 }: Props) => {
   const theme = useThemeContext();
+
+  // Define color constants for stroke and gradient stops
+  const RED_COLOR = "#e61313";
+  const GREEN_COLOR = "#038907";
+  const BLUE_COLOR = "#008FFB";
+  const CYAN_COLOR = "#F0F036";
+  const ORANGE_COLOR = "#008FFB";
+
+  const GRADIENT_OPACITY = 0.8;
 
   return (
     <Card>
@@ -63,60 +72,125 @@ const CustomLineChart = ({
         </Flex>
 
         <ResponsiveContainer width="100%" height={height}>
-          <LineChart data={data}>
-            {/* 5 static lines */}
-            <Line
+          <AreaChart data={data}>
+            {/* 1. Define Gradients in <defs> */}
+            <defs>
+              {/* Red Line Gradient: from 80% opacity to 0% */}
+              <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={RED_COLOR}
+                  stopOpacity={GRADIENT_OPACITY}
+                />
+                <stop offset="95%" stopColor={RED_COLOR} stopOpacity={0} />
+              </linearGradient>
+
+              {/* Green Line Gradient */}
+              <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={GREEN_COLOR}
+                  stopOpacity={GRADIENT_OPACITY}
+                />
+                <stop offset="95%" stopColor={GREEN_COLOR} stopOpacity={0} />
+              </linearGradient>
+
+              {/* Blue Line Gradient */}
+              <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={BLUE_COLOR}
+                  stopOpacity={GRADIENT_OPACITY}
+                />
+                <stop offset="95%" stopColor={BLUE_COLOR} stopOpacity={0} />
+              </linearGradient>
+
+              {/* Cyan Line Gradient */}
+              <linearGradient id="colorCyan" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={CYAN_COLOR}
+                  stopOpacity={GRADIENT_OPACITY}
+                />
+                <stop offset="95%" stopColor={CYAN_COLOR} stopOpacity={0} />
+              </linearGradient>
+
+              {/* Orange Line Gradient */}
+              <linearGradient id="colorOrange" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={ORANGE_COLOR}
+                  stopOpacity={GRADIENT_OPACITY}
+                />
+                <stop offset="95%" stopColor={ORANGE_COLOR} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+
+            {/* 2. Apply Gradient fill and Solid Line stroke */}
+
+            <Area
+              type="monotone"
               dataKey="redLine"
               name={
                 productionDashboardData?.topSupplyChains?.[0]?.provinceName ||
                 "Province 1"
               }
-              stroke="#D6191D"
+              stroke={RED_COLOR} // Solid Line (Highlight)
               strokeWidth={3}
-              strokeDasharray="5 5"
+              fill="url(#colorRed)" // Gradient Fill
+              // strokeDasharray="5 5"
             />
 
-            <Line
+            <Area
+              type="monotone"
               dataKey="greenLine"
               name={
                 productionDashboardData?.topSupplyChains?.[1]?.provinceName ||
                 "Province 2"
               }
-              stroke="#609052"
+              stroke={GREEN_COLOR} // Solid Line (Highlight)
               strokeWidth={3}
+              fill="url(#colorGreen)" // Gradient Fill
             />
 
-            <Line
+            <Area
+              type="monotone"
               dataKey="blueLine"
               name={
                 productionDashboardData?.topSupplyChains?.[2]?.provinceName ||
                 "Province 3"
               }
-              stroke="#0378C7"
+              stroke={BLUE_COLOR} // Solid Line (Highlight)
               strokeWidth={3}
-              strokeDasharray="5 5"
+              fill="url(#colorBlue)" // Gradient Fill
+              // strokeDasharray="5 5"
             />
 
-            <Line
+            <Area
+              type="monotone"
               dataKey="cyanLine"
               name={
                 productionDashboardData?.topSupplyChains?.[3]?.provinceName ||
                 "Province 4"
               }
-              stroke="#48CAE4"
+              stroke={CYAN_COLOR} // Solid Line (Highlight)
               strokeWidth={3}
+              fill="url(#colorCyan)" // Gradient Fill
             />
 
-            <Line
+            <Area
+              type="monotone"
               dataKey="orangeLine"
               name={
                 productionDashboardData?.topSupplyChains?.[4]?.provinceName ||
                 "Province 5"
               }
-              stroke="#FFA500"
+              stroke={ORANGE_COLOR} // Solid Line (Highlight)
               strokeWidth={3}
+              fill="url(#colorOrange)" // Gradient Fill
             />
 
+            {/* XAxis, YAxis, Tooltip, and CartesianGrid remain unchanged */}
             <XAxis
               dataKey="label"
               scale="point"
@@ -160,13 +234,12 @@ const CustomLineChart = ({
               stroke="#44444F"
               strokeWidth={1}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
-
         {other}
       </Box>
     </Card>
   );
 };
 
-export default CustomLineChart;
+export default CustomAreaChart;

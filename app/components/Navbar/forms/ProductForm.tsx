@@ -196,6 +196,7 @@ const ProductForm = () => {
               inputNode={
                 <>
                   <CustomRadixInput
+                    type="number"
                     placeholder="Enter Rate"
                     {...register("amount", { valueAsNumber: true })}
                   />

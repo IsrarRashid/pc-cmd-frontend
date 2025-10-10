@@ -1,4 +1,11 @@
 import {
+  COUNTRY_API,
+  DISTRICT_API,
+  DIVISION_API,
+  PRODUCT_API,
+  PROVINCE_API,
+} from "@/app/APIs";
+import {
   Badge,
   Box,
   Button,
@@ -6,13 +13,13 @@ import {
   Flex,
   Heading,
   IconButton,
-  Link,
   Text,
 } from "@radix-ui/themes";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { ReactNode, useState } from "react";
 import {
   FiArchive,
-  FiAward,
   FiBookOpen,
   FiPackage,
   FiSunrise,
@@ -20,10 +27,11 @@ import {
   FiYoutube,
 } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import ActionButton from "../Form/ActionButton";
+import { OptionType } from "../Form/CustomSelect";
 import CountryForm from "./forms/CountryForm";
 import Form from "./forms/Form";
-import ProductForm from "./forms/ProductForm";
+import ProductForm, { Product } from "./forms/ProductForm";
+import ProductionForm from "./forms/ProductionForm";
 import ProvinceForm from "./forms/ProvinceForm";
 
 export interface MegaMenuTile {
@@ -34,6 +42,82 @@ export interface MegaMenuTile {
 }
 
 const MegaMenu = () => {
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ["products"],
+    queryFn: () => axios.get(PRODUCT_API).then((res) => res.data),
+    staleTime: 60 * 1000, // 60s
+    retry: 3,
+  });
+
+  const { data: countries } = useQuery<Product[]>({
+    queryKey: ["countries"],
+    queryFn: () => axios.get(COUNTRY_API).then((res) => res.data),
+    staleTime: 60 * 1000, // 60s
+    retry: 3,
+  });
+
+  const { data: provinces } = useQuery<Product[]>({
+    queryKey: ["provinces"],
+    queryFn: () => axios.get(PROVINCE_API).then((res) => res.data),
+    staleTime: 60 * 1000, // 60s
+    retry: 3,
+  });
+
+  const { data: divisions } = useQuery<Product[]>({
+    queryKey: ["divisions"],
+    queryFn: () => axios.get(DIVISION_API).then((res) => res.data),
+    staleTime: 60 * 1000, // 60s
+    retry: 3,
+  });
+
+  const { data: districts } = useQuery<Product[]>({
+    queryKey: ["districts"],
+    queryFn: () => axios.get(DISTRICT_API).then((res) => res.data),
+    staleTime: 60 * 1000, // 60s
+    retry: 3,
+  });
+
+  const productOptions: OptionType[] | undefined = products?.map((product) => {
+    return {
+      value: product.id.toString(),
+      label: product.name,
+    };
+  });
+
+  const countryOptions: OptionType[] | undefined = countries?.map((country) => {
+    return {
+      value: country.id.toString(),
+      label: country.name,
+    };
+  });
+
+  const provinceOptions: OptionType[] | undefined = provinces?.map(
+    (province) => {
+      return {
+        value: province.id.toString(),
+        label: province.name,
+      };
+    }
+  );
+
+  const divisionOptions: OptionType[] | undefined = divisions?.map(
+    (division) => {
+      return {
+        value: division.id.toString(),
+        label: division.name,
+      };
+    }
+  );
+
+  const districtOptions: OptionType[] | undefined = districts?.map(
+    (district) => {
+      return {
+        value: district.id.toString(),
+        label: district.name,
+      };
+    }
+  );
+
   const provinceData = [
     {
       label: "Punjab",
@@ -276,13 +360,26 @@ const MegaMenu = () => {
           Product
         </Text>
         <ProductForm />
-        <Link href="/production-consumption/list">
+        {/* <Link href="/production-consumption/list">
           <ActionButton
             name="Production / Consumption"
             icon={<FiAward className="text-primary" size={24} />}
             description="Production / Consumption Data"
           />
-        </Link>
+        </Link> */}
+        {productOptions &&
+          countryOptions &&
+          provinceOptions &&
+          divisionOptions &&
+          districtOptions && (
+            <ProductionForm
+              productOptions={productOptions}
+              countryOptions={countryOptions}
+              provinceOptions={provinceOptions}
+              divisionOptions={divisionOptions}
+              districtOptions={districtOptions}
+            />
+          )}
         <CountryForm />
         <ProvinceForm />
       </Box>
@@ -308,3 +405,11 @@ const MegaMenu = () => {
 };
 
 export default MegaMenu;
+
+// const useUsers = () =>
+//   const {data:products, error, isLoading} = useQuery<string[]>({
+//     queryKey: ["products"],
+//     queryFn: () => axios.get(PRODUCT_API).then((res) => res.data),
+//     staleTime: 60 * 1000, // 60s
+//     retry: 3,
+//   });

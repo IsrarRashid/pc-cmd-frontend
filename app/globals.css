@@ -14,6 +14,11 @@
 
   /* Your primary theme color */
   --color-primary: #eaa64d;
+  --color-success: #038907;
+  --color-light-green: #00d607;
+  --color-warning: #f0f036;
+  --color-danger: #e61313;
+  --color-info: #37b5ef;
 
   @keyframes slideDown {
     from {
@@ -70,4 +75,14 @@ body {
 }
 .AccordionContent[data-state="closed"] {
   animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.custom-separator {
+  @apply w-full h-px bg-white rounded-full px-0; /* Uses Tailwind's @apply */
+}
+/* Target internal line */
+.custom-separator::before,
+[data-radix-separator-root]::before {
+  @apply bg-white h-px rounded-full w-full block;
+  content: "";
 }

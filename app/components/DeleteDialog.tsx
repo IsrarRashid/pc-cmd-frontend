@@ -20,9 +20,9 @@ const DeleteDialog = ({
   const handleClose = () => {
     setDialogOpen(false);
   };
-  const handleShow = async () => {
-    setDialogOpen(true);
-  };
+  // const handleShow = async () => {
+  //   setDialogOpen(true);
+  // };
 
   return (
     <>

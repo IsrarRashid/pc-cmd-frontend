@@ -1,4 +1,5 @@
-import { DistrictData, DistrictFeature } from "./PunjabMap";
+import { DistrictData } from "./PunjabMap";
+import { DistrictFeature } from "./PunjabMap";
 
 // DistrictCard.tsx
 type DistrictCardProps = {

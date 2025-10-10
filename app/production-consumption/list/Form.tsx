@@ -5,14 +5,12 @@ import TableRowHeaderCell from "@/app/components/table/TableRowHeaderCell";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, IconButton, Table } from "@radix-ui/themes";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
   id: z.number().optional().default(0),
-  // currency: z.string().min(1, { message: "Please add Currency!" }),
   productId: z
     .number()
     .min(1, "Please add product!")
@@ -82,16 +80,14 @@ interface Props {
   productOptions: OptionType[];
 }
 
-const Form = ({ data, api, method, id, productOptions }: Props) => {
+const Form = ({ data, productOptions }: Props) => {
   const [isAllowEdit, setAllowEdit] = useState<boolean>(false);
-  const router = useRouter();
   const {
     // register,
     // handleSubmit,
     // setValue,
     // reset,
     control,
-    formState: { errors },
   } = useForm<ProductionInput>({ resolver: zodResolver(schema) });
 
   // const onSubmit = async (formData: ProductionInput) => {
