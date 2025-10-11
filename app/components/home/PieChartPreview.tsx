@@ -30,7 +30,7 @@ const PieChartPreview = ({ province }: { province: Province }) => {
           <Text className="!font-semibold " size="1">
             Punjab Analytics
           </Text>
-          <Select.Root size="1" defaultValue="select">
+          <Select.Root size="1" defaultValue="Tons">
             <Select.Trigger
               radius="full"
               className="!bg-[#002344] !text-white"

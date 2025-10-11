@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, Flex, Heading, Text, useThemeContext } from "@radix-ui/themes";
+import { Box, useThemeContext } from "@radix-ui/themes";
+import { ReactNode } from "react";
 import {
   Bar,
   BarChart,
@@ -13,7 +14,6 @@ import {
   YAxis,
 } from "recharts";
 import Card from "../home/Card";
-import { ReactNode } from "react";
 
 export interface ChartType {
   label: string;

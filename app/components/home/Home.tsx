@@ -5,7 +5,6 @@ import { Box, Dialog, Flex, Heading, ScrollArea } from "@radix-ui/themes";
 import AreaChartPreview from "./AreaChartPreview";
 import BarChartPreview from "./BarChartPreview";
 import Card from "./Card";
-import DepartmentCategoryFilter from "./DepartmentCategoryFilter";
 import PakistanMap from "./GoogleMap/PakistanMap/PakistanMap";
 import PieTile from "./PieTile";
 import ProductFilter from "./ProductFilter";
@@ -13,13 +12,20 @@ import ProvinceTile from "./ProvinceTile";
 import PunjabTableTile from "./PunjabTableTile";
 import TrackingMap from "./TrackingMap/TrackingMap";
 import { useEffect, useState } from "react";
+import EconomicBalanceFilter from "./EconomicBalanceFilter";
+import { Product } from "../Navbar/forms/ProductForm";
 
 interface Props {
   dashboardData: Dashboard;
   productionDashboardData: ProductionDashboard;
+  productsData: Product[];
 }
 
-const Home = ({ dashboardData, productionDashboardData }: Props) => {
+const Home = ({
+  dashboardData,
+  productionDashboardData,
+  productsData,
+}: Props) => {
   console.log("dashboardData", dashboardData);
   // const [show, setShow] = useState<boolean>(false);
 
@@ -71,7 +77,7 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
       <Box className="w-full h-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Flex direction="column" className="px-2.5 pb-2.5 !gap-2.5">
-            <DepartmentCategoryFilter />
+            <EconomicBalanceFilter />
             <Card>
               {/* <Flex
                 justify="between"
@@ -149,7 +155,10 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
           </Flex>
           <Box className="col-span-2 rounded-[14px] w-full">
             <Card>
-              <PakistanMap productionDashboardData={productionDashboardData} />
+              <PakistanMap
+                productionDashboardData={productionDashboardData}
+                productsData={productsData}
+              />
             </Card>
           </Box>
           <ScrollArea
@@ -474,7 +483,9 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
                   <Dialog.Root key={province.provinceId}>
                     <Dialog.Trigger>
                       <div className="cursor-none">
-                        <ProvinceTile province={province} />
+                        {province.provinceName !== "Punjab" && (
+                          <ProvinceTile province={province} />
+                        )}
                       </div>
                     </Dialog.Trigger>
 

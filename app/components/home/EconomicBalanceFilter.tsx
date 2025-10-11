@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const DepartmentCategoryFilter = () => {
-  // const searchParams = useSearchParams();
-  // const departmentCategory =
-  //   searchParams.get("departmentCategory") || undefined;
+const EconomicBalanceFilter = () => {
+  const searchParams = useSearchParams();
+  const departmentCategory =
+    searchParams.get("departmentCategory") || undefined;
 
   const [selectedButton, setSelectedButton] = useState(1);
-
+  // const router = useRouter();
   // const handleStatusChange = useCallback(
   //   (departmentCategory: string) => {
   //     const query =
@@ -18,9 +19,9 @@ const DepartmentCategoryFilter = () => {
   //   [router, currentPath]
   // );
 
-  // useEffect(() => {
-  //   if (departmentCategory) setSelectedButton(2);
-  // }, []);
+  useEffect(() => {
+    if (departmentCategory) setSelectedButton(2);
+  }, [departmentCategory]);
 
   return (
     <div className="flex flex-wrap bg-[#063A6A] shadow-[0_0_0_1px_#1BCEF5]">
@@ -65,4 +66,4 @@ const DepartmentCategoryFilter = () => {
   );
 };
 
-export default DepartmentCategoryFilter;
+export default EconomicBalanceFilter;

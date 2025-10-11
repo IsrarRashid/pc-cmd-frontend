@@ -68,7 +68,7 @@ const schema = z.object({
     .min(1, "Please add unit!")
     .transform((val) => Number(val))
     .refine((val) => !isNaN(val), { message: "Please add unit!" }),
-  createdAt: z.string().min(1, { message: "Please add Created At!" }),
+  createdAt: z.string().optional().default(new Date().toISOString()),
   createdBy: z.string().min(1, { message: "Please add Created By!" }),
   updatedAt: z.string().min(1, { message: "Please add Updated At!" }),
   updatedBy: z.string().min(1, { message: "Please add Updated By!" }),
@@ -138,7 +138,8 @@ const ProductionForm = ({
     handleCloseDialog();
     const modifiedFormData: ProductionInput = {
       ...formData,
-      // UpdateBy: formData.parentId === 0 ? null : formData.parentId,
+      createdBy: "admin",
+      updatedBy: "admin",
       updatedAt: new Date().toISOString(),
     };
     try {
@@ -382,7 +383,7 @@ const ProductionForm = ({
                 </>
               }
             >
-              Province
+              Division
             </CustomLabel>
             <CustomLabel
               inputNode={
@@ -427,7 +428,7 @@ const ProductionForm = ({
                 </>
               }
             >
-              Province
+              District
             </CustomLabel>
             <CustomLabel
               inputNode={

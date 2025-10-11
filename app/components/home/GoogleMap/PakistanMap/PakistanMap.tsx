@@ -1,14 +1,15 @@
 "use client";
 
+import { Product } from "@/app/components/Navbar/forms/ProductForm";
 import { DivisionProduction, ProductionDashboard, Province } from "@/app/page";
 import { devmap } from "@/app/utils/utils";
 import pakistanGeo from "@/public/data/gadm41_PAK/gadm41_PAK_0.json";
 import provinces from "@/public/data/gadm41_PAK/gadm41_PAK_1.json";
 import oldDivisions from "@/public/data/gadm41_PAK/gadm41_PAK_2.json";
 import districts from "@/public/data/gadm41_PAK/gadm41_PAK_3.json";
-import { Box, Button, Table, Text } from "@radix-ui/themes";
+import { Avatar, Box, Button, Flex, Table, Text } from "@radix-ui/themes";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdFullscreen } from "react-icons/md";
 import { RiFullscreenExitFill } from "react-icons/ri";
@@ -65,11 +66,12 @@ const divisions = {
 //   (d) => d.properties.NAME_3 === "Sahiwal"
 // );
 
-const PakistanMap = ({
-  productionDashboardData,
-}: {
+interface Props {
   productionDashboardData: ProductionDashboard;
-}) => {
+  productsData: Product[];
+}
+
+const PakistanMap = ({ productionDashboardData, productsData }: Props) => {
   const [selectedProvince, setSelectedProvince] =
     useState<ProvinceFeature | null>(null);
 
@@ -87,6 +89,25 @@ const PakistanMap = ({
   console.log("specificProvince", specificProvince);
   console.log("specificDivision", specificDivision);
   console.log("specificDivision", specificDivision);
+
+  const searchParams = useSearchParams();
+  const product = searchParams.get("product") || undefined;
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
+
+  useEffect(() => {
+    if (product && productsData) {
+      const selectedProduct = productsData.find(
+        (p) => p.id === Number(product)
+      );
+      setSelectedProduct(selectedProduct);
+    }
+  }, [productsData, product]);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      console.log("selectedProduct", selectedProduct);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     if (selectedProvince) {
@@ -256,19 +277,29 @@ const PakistanMap = ({
     <div className="relative w-full h-full">
       <div id="map-wrapper" className="relative w-full h-full mb-3">
         <div className="absolute mb-3 left-2.5 top-2.5 z-10">
-          <Button
+          <Flex
+            align="center"
+            gap="2"
             className="!bg-[#013769] !shadow-[0_0_0_1px_#013769] !rounded-lg !px-[0.438em] !py-[0.188em]"
-            onClick={() => setSelectedProvince(null)}
           >
-            <Image
-              src="/icons/emojione_tomato.png"
-              alt="tomato"
-              width={23}
-              height={23}
-              className="w-[23px] h-[23px]"
-            />{" "}
-            Tometo
-          </Button>
+            {selectedProduct && (
+              <Avatar
+                src={
+                  selectedProduct.icon.startsWith("/upload")
+                    ? selectedProduct.icon
+                    : `/upload/${selectedProduct.icon}`
+                }
+                width={23}
+                height={23}
+                className="!w-[23px] !h-[23px]"
+                onClick={() => setSelectedProvince(null)}
+                fallback="?"
+              ></Avatar>
+            )}
+            <Text wrap="nowrap" className="!text-white">
+              {selectedProduct?.name}
+            </Text>
+          </Flex>
         </div>
         <div className="absolute mb-3 right-14 top-2.5 z-10">
           {selectedProvince && !selectedDivision && (

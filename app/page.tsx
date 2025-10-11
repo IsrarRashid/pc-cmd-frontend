@@ -1,6 +1,7 @@
-import { DASHBOARD_API, PRODUCTION_DASHBOARD_API } from "./APIs";
+import { DASHBOARD_API, PRODUCT_API, PRODUCTION_DASHBOARD_API } from "./APIs";
 import DashboardWrapper from "./components/DashboardWrapper";
 import Home from "./components/home/Home";
+import { Product } from "./components/Navbar/forms/ProductForm";
 
 interface District {
   name: string;
@@ -161,17 +162,24 @@ const HomePage = async ({ searchParams }: Props) => {
     { cache: "no-store" }
   );
 
+  const res3 = await fetch(`${process.env.BACKEND_URL}${PRODUCT_API}`, {
+    cache: "no-store",
+  });
+
   const dashboardData: Dashboard = await res.json();
   const productionDashboardData: ProductionDashboard = await res2.json();
+  const productsData: Product[] = await res3.json();
   console.log("dashboardData", dashboardData);
   console.log("productionDashboardData", productionDashboardData);
+  console.log("productsData", productsData);
 
   return (
     <DashboardWrapper>
-      {productionDashboardData && dashboardData && (
+      {productionDashboardData && dashboardData && productsData && (
         <Home
           dashboardData={dashboardData}
           productionDashboardData={productionDashboardData}
+          productsData={productsData}
         />
       )}
     </DashboardWrapper>

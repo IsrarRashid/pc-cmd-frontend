@@ -65,9 +65,9 @@ const MyPieChart = ({ height = 300, data, header, otherValue }: Props) => {
   };
 
   // ✅ find max entry for center label
-  const maxEntry = data.reduce((prev, curr) =>
-    curr.value > prev.value ? curr : prev
-  );
+  // const maxEntry = data.reduce((prev, curr) =>
+  //   curr.value > prev.value ? curr : prev
+  // );
 
   return (
     <Box className="bg-theme rounded-[17px]">

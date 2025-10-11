@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classnames from "classnames";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaRegCircle } from "react-icons/fa";
 import { Product } from "../Navbar/forms/ProductForm";
 
@@ -29,36 +29,30 @@ const ProductFilter = () => {
     retry: 3,
   });
 
-  const [selectedButton, setSelectedButton] = useState(1);
+  const [selectedButton, setSelectedButton] = useState<number>();
 
-  const products =
-    data?.map((product) => ({
-      label: product.name.toUpperCase(),
-      value: String(product.id),
-      icon: product.icon,
-    })) ?? [];
-  // const items = [
-  //   {
-  //     id: 2,
-  //     imagePath: "/icons/emojione_tomato.png",
-  //   },
-  //   {
-  //     id: 0,
-  //     imagePath: "/icons/noto_onion.png",
-  //   },
-  //   {
-  //     id: 1,
-  //     imagePath: "/icons/emojione_sheaf-of-rice.png",
-  //   },
-  //   {
-  //     id: 3,
-  //     imagePath: "/icons/noto_potato.png",
-  //   },
-  //   {
-  //     id: 4,
-  //     imagePath: "/icons/twemoji_cooked-rice.png",
-  //   },
-  // ];
+  // ✅ useMemo to avoid recreating `products` each render
+  const products = useMemo(
+    () =>
+      data?.map((product) => ({
+        label: product.name.toUpperCase(),
+        value: String(product.id),
+        icon: product.icon,
+      })) ?? [],
+    [data]
+  );
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!initialized && products.length > 0) {
+      setInitialized(true);
+      setSelectedButton(Number(products[0].value));
+      const query = products[0].value ? `?product=${products[0].value}` : "";
+      router.push("/" + query);
+      console.log("Navigating to:", "/" + query);
+    }
+  }, [products, initialized, router]);
+
   return (
     <>
       <Flex
@@ -67,24 +61,24 @@ const ProductFilter = () => {
         gap="2"
         className="!px-2 !py-[5px]"
       >
-        {products.map((product, i) => (
+        {products.map((product) => (
           <IconButton
-            key={i}
+            key={product.value}
             className={classnames({
               "w-8 !h-8 !relative !rounded-full !transition-all !duration-200":
                 true,
               "!text-white !bg-[rgba(170,60,49,0.1)] !border-[1.44px] !border-[#AA3C31] ":
-                selectedButton === i,
-              " !bg-transparent": selectedButton !== i,
+                selectedButton === Number(product.value),
+              " !bg-transparent": selectedButton !== Number(product.value),
             })}
             onClick={() => {
-              setSelectedButton(i);
+              setSelectedButton(Number(product.value));
               const query = product.value ? `?product=${product.value}` : "";
               router.push("/" + query);
               console.log("Navigating to:", "/" + query);
             }}
           >
-            {selectedButton === i && (
+            {selectedButton === Number(product.value) && (
               <div className="absolute">
                 <FaRegCircle size={36} className="text-[#AA3C31]" />
               </div>
