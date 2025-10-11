@@ -91,7 +91,7 @@ const PakistanMap = ({
   useEffect(() => {
     if (selectedProvince) {
       const specificProvince =
-        productionDashboardData.countryProduction.provinces.find(
+        productionDashboardData.countryProduction?.provinces?.find(
           (province) =>
             province.provinceName === selectedProvince.properties.NAME_1
         );
@@ -448,24 +448,32 @@ const PakistanMap = ({
                 geoData={pakistanGeo as GeoJSONPakistan}
                 selectedProvince={selectedProvince}
               />
-              <ProvincesArea
-                geoData={provinces as GeoJSONProvinces}
-                selectedProvince={selectedProvince}
-                onProvinceClick={(province) => setSelectedProvince(province)}
-                data={productionDashboardData.countryProduction.provinces}
-              />
-              <DivisionsArea
-                geoData={divisions as GeoJSONDivisions}
-                selectedProvince={selectedProvince}
-                selectedDivision={selectedDivision}
-                onDivisionClick={(division) => setSelectedDivision(division)}
-                data={specificProvince?.divisions}
-              />
-              <DistrictsArea
-                geoData={districts as GeoJSONDistricts}
-                selectedDivision={selectedDivision}
-                data={specificDivision?.districts}
-              />
+              {productionDashboardData?.countryProduction?.provinces && (
+                <ProvincesArea
+                  geoData={provinces as GeoJSONProvinces}
+                  selectedProvince={selectedProvince}
+                  onProvinceClick={(province) => setSelectedProvince(province)}
+                  data={
+                    productionDashboardData?.countryProduction?.provinces ?? []
+                  }
+                />
+              )}
+              {specificProvince?.divisions && (
+                <DivisionsArea
+                  geoData={divisions as GeoJSONDivisions}
+                  selectedProvince={selectedProvince}
+                  selectedDivision={selectedDivision}
+                  onDivisionClick={(division) => setSelectedDivision(division)}
+                  data={specificProvince?.divisions ?? []}
+                />
+              )}
+              {specificDivision?.districts && (
+                <DistrictsArea
+                  geoData={districts as GeoJSONDistricts}
+                  selectedDivision={selectedDivision}
+                  data={specificDivision?.districts ?? []}
+                />
+              )}
             </Map>
           )}
         </APIProvider>

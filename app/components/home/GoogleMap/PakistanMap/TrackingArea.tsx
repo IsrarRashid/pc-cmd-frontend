@@ -23,7 +23,7 @@ const TrackingArea = ({ data }: { data: Tracking[] }) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!map || !routesLibrary || !data.length) return;
+    if (!map || !routesLibrary || !data?.length) return;
 
     const promises = data.map(async (track) => {
       const directionsService = new routesLibrary.DirectionsService();
@@ -129,9 +129,18 @@ const TrackingArea = ({ data }: { data: Tracking[] }) => {
 
     Promise.all(promises)
       .then((resolvedArrays) => {
-        // flatten the array of arrays
         const flattened = resolvedArrays.flat();
         setMarkers(flattened);
+
+        // ✅ Fit bounds to include all markers (start, end, and vehicle)
+        if (map && flattened.length > 0) {
+          const bounds = new google.maps.LatLngBounds();
+          flattened.forEach((m) => bounds.extend(m.position));
+          map.fitBounds(bounds);
+
+          // ✅ Optional: add a little padding
+          map.panToBounds(bounds, { top: 50, left: 50, bottom: 50, right: 50 });
+        }
       })
       .catch((err) => console.error("Error computing routes:", err));
   }, [map, routesLibrary, data]);

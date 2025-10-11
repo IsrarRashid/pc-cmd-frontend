@@ -18,7 +18,6 @@ const TrackingMap = ({
 }: {
   productionDashboardData: ProductionDashboard;
 }) => {
-  const [showGraph, setShowGraph] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -47,16 +46,6 @@ const TrackingMap = ({
   return (
     <div className="relative w-full h-full">
       <div id="tracking-wrapper" className="relative w-full h-full mb-3">
-        <div className="absolute mb-3 right-14 bottom-0 z-10 w-[95%]">
-          <Flex justify="end">
-            <Button
-              onClick={() => setShowGraph(!showGraph)}
-              className="!bg-white !text-[#101828] !border-[#D0D5DD] !border-[1px] !mb-2"
-            >
-              {showGraph ? "Hide" : "Show Graph"}
-            </Button>
-          </Flex>
-        </div>
         <button
           className="absolute top-3 right-3 z-20 bg-white p-1 rounded shadow"
           onClick={toggleFullscreen}

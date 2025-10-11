@@ -13,10 +13,13 @@ import {
   YAxis,
 } from "recharts";
 import Card from "../home/Card";
+import { ReactNode } from "react";
 
 export interface ChartType {
   label: string;
   value: number;
+  season: string;
+  percentage: number;
   color?: string;
 }
 
@@ -27,7 +30,7 @@ interface Props {
   thu?: number;
   fri?: number;
   sat?: number;
-  heading: string;
+  heading: ReactNode;
   height: number;
   data: ChartType[];
   layout?: "vertical" | "horizontal";
@@ -91,15 +94,7 @@ const MyThinBarChart = ({
   return (
     <Card>
       <Box className="py-2.5 px-5">
-        <Flex justify="between" align="center" className="mb-2.5 ">
-          <Heading weight="medium" className="!text-sm !text-white">
-            {heading}
-          </Heading>
-          {/* <Flex>
-            In this Week <GoTriangleDown size={21} />
-          </Flex> */}
-          <Text></Text>
-        </Flex>
+        {heading}
         <ResponsiveContainer width="100%" height={height}>
           <BarChart
             layout={layout}

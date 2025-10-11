@@ -139,6 +139,10 @@ export interface ProductionDashboard {
     sindhPercentage: number;
     balochistanPercentage: number;
     kpkPercentage: number;
+    punjabSession: string;
+    sindhSession: string;
+    balochistanSession: string;
+    kpkSession: string;
   };
 }
 
@@ -164,10 +168,12 @@ const HomePage = async ({ searchParams }: Props) => {
 
   return (
     <DashboardWrapper>
-      <Home
-        dashboardData={dashboardData}
-        productionDashboardData={productionDashboardData}
-      />
+      {productionDashboardData && dashboardData && (
+        <Home
+          dashboardData={dashboardData}
+          productionDashboardData={productionDashboardData}
+        />
+      )}
     </DashboardWrapper>
   );
 };

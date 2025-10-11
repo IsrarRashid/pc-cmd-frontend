@@ -27,6 +27,7 @@ const DivisionPieChartPreview = ({ heading }: { heading: string }) => {
   ];
   return (
     <MyPieChart
+      otherValue={0}
       data={chartData}
       height={200}
       header={

@@ -37,28 +37,28 @@ const ProductFilter = () => {
       value: String(product.id),
       icon: product.icon,
     })) ?? [];
-  const items = [
-    {
-      id: 2,
-      imagePath: "/icons/emojione_tomato.png",
-    },
-    {
-      id: 0,
-      imagePath: "/icons/noto_onion.png",
-    },
-    {
-      id: 1,
-      imagePath: "/icons/emojione_sheaf-of-rice.png",
-    },
-    {
-      id: 3,
-      imagePath: "/icons/noto_potato.png",
-    },
-    {
-      id: 4,
-      imagePath: "/icons/twemoji_cooked-rice.png",
-    },
-  ];
+  // const items = [
+  //   {
+  //     id: 2,
+  //     imagePath: "/icons/emojione_tomato.png",
+  //   },
+  //   {
+  //     id: 0,
+  //     imagePath: "/icons/noto_onion.png",
+  //   },
+  //   {
+  //     id: 1,
+  //     imagePath: "/icons/emojione_sheaf-of-rice.png",
+  //   },
+  //   {
+  //     id: 3,
+  //     imagePath: "/icons/noto_potato.png",
+  //   },
+  //   {
+  //     id: 4,
+  //     imagePath: "/icons/twemoji_cooked-rice.png",
+  //   },
+  // ];
   return (
     <>
       <Flex
@@ -99,7 +99,7 @@ const ProductFilter = () => {
                 alt={product.icon}
                 width={23}
                 height={23}
-                className="w-[23px] h-[23px]"
+                className="!w-[23px] !h-[23px]"
                 fallback="?"
               />
             </div>

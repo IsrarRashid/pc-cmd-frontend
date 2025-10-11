@@ -37,7 +37,7 @@ const PunjabTableTile = ({
         </Table.Header>
 
         <Table.Body>
-          {productionDashboardData.countryProduction.provinces
+          {productionDashboardData?.countryProduction?.provinces
             .find((province) => province.provinceName === "Punjab")
             ?.divisions.map((division) => (
               <Table.Row key={division.divisionId}>

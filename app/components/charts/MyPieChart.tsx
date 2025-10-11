@@ -16,135 +16,124 @@ export interface ChartType {
   label: string;
   value: number;
   color: string;
+  [key: string]: string | number; // 👈 add this index signature
 }
 
 interface Props {
-  // mon: number;
-  // tue: number;
-  // wed: number;
-  // thu: number;
-  // fri: number;
-  // sat: number;
   height?: number;
   data: ChartType[];
   header: ReactNode;
+  otherValue: number;
 }
 
-export interface ChartType {
-  label: string;
-  value: number;
-  color: string;
-}
-
-const MyPieChart = ({
-  // mon,
-  // tue,
-  // wed,
-  // thu,
-  // fri,
-  // sat,
-  height = 300,
-  data,
-  header,
-}: Props) => {
-  // const data: ChartType[] = [
-  //   { label: "Mon", value: mon, color: "#0088FE" },
-  //   { label: "Tue", value: tue, color: "#00C49F" },
-  //   { label: "Wed", value: wed, color: "#FFBB28" },
-  //   { label: "Thu", value: thu, color: "#FF8042" },
-  //   { label: "Fri", value: fri, color: "#FF6699" },
-  //   { label: "Sat", value: sat, color: "#AA33FF" },
-  // ];
-
+const MyPieChart = ({ height = 300, data, header, otherValue }: Props) => {
   const theme = useThemeContext();
 
-  // find the max
-  const maxEntry = data.reduce((prev, curr) =>
-    curr.value > prev.value ? curr : prev
-  );
-
   const RADIAN = Math.PI / 180;
-  console.log(maxEntry);
-  console.log(RADIAN);
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    value, // 👈 get actual value from props
-  }: PieLabelRenderProps) => {
-    const numCx = Number(cx);
-    const numCy = Number(cy);
-    const numMidAngle = Number(midAngle);
-    const numInner = Number(innerRadius);
-    const numOuter = Number(outerRadius);
-    const numValue = Number(value);
 
-    const RADIAN = Math.PI / 180;
-    const radius = numInner + (numOuter - numInner) * 0.2;
+  // ✅ Custom label positioned slightly outside the slice
+  const renderCustomizedLabel = (props: PieLabelRenderProps) => {
+    const { cx, cy, midAngle, outerRadius, value, name } = props;
+
+    const numCx = Number(cx ?? 0);
+    const numCy = Number(cy ?? 0);
+    const numMidAngle = Number(midAngle ?? 0);
+    const numOuterRadius = Number(outerRadius ?? 50);
+    const numValue = Number(value ?? 0);
+
+    const radius = numOuterRadius + 10;
     const x = numCx + radius * Math.cos(-numMidAngle * RADIAN);
     const y = numCy + radius * Math.sin(-numMidAngle * RADIAN);
+
+    // 👇 Add minus sign manually if deficit & negative
+    const displayValue =
+      name === "Deficit" && otherValue < 0 ? `-${numValue}` : numValue;
 
     return (
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="#fff"
         textAnchor={x > numCx ? "start" : "end"}
         dominantBaseline="central"
         fontSize="12"
         fontWeight="600"
       >
-        {numValue.toString()}
+        {displayValue}
       </text>
     );
   };
+
+  // ✅ find max entry for center label
+  const maxEntry = data.reduce((prev, curr) =>
+    curr.value > prev.value ? curr : prev
+  );
 
   return (
     <Box className="bg-theme rounded-[17px]">
       {header}
       <ResponsiveContainer width="100%" height={height}>
-        <PieChart width={600} height={400} data={data}>
+        <PieChart>
           <Tooltip
+            content={({ payload }) => {
+              if (!payload || payload.length === 0) return null;
+              const { name, value } = payload[0];
+              const displayValue =
+                name === "Deficit" && otherValue < 0 ? `-${value}` : value;
+
+              return (
+                <div
+                  style={{
+                    backgroundColor:
+                      theme.appearance === "light" ? "#002344" : "#292932",
+                    borderRadius: "10px",
+                    padding: "8px 12px",
+                    color: "#fff",
+                    boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                    {name}
+                  </div>
+                  <div style={{ fontSize: "13px" }}>{displayValue}</div>
+                </div>
+              );
+            }}
             contentStyle={{
               backgroundColor:
-                theme.appearance === "light" ? "#002344" : "#292932", // Background color of the tooltip
-              border: "0px", // Border styling
-              borderRadius: "18px", // Rounded corners
+                theme.appearance === "light" ? "#002344" : "#292932",
+              border: "0px",
+              borderRadius: "18px",
               padding: "10px",
               boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
             }}
             labelStyle={{
-              fontSize: "16px", // Label font size
-              fontWeight: "bold", // Label font weight
+              fontSize: "16px",
+              fontWeight: "bold",
               color: "#fff",
             }}
             itemStyle={{
-              fontSize: "14px", // Item font size
-              fontWeight: "normal", // Item font weight
+              fontSize: "14px",
               color: theme.appearance === "light" ? "#fff" : "#B5B5BE",
             }}
           />
+
           <Pie
+            data={data} // 👈 fix here
             dataKey="value"
-            fill="#aa3c31"
-            innerRadius={30}
-            nameKey="label" // 👈 tell Legend to use "label"
-            outerRadius={50}
+            nameKey="label"
+            innerRadius={35}
+            outerRadius={55}
             paddingAngle={2}
-            cornerRadius={3.31}
-            stroke="none"
-            label={renderCustomizedLabel}
+            cornerRadius={4}
             labelLine={false}
+            label={renderCustomizedLabel}
           >
             {data.map((entry) => (
               <Cell key={`cell-${entry.label}`} fill={entry.color} />
             ))}
 
-            {/* ✅ Label for each piece (white value text) */}
-
-            {/* Center text */}
+            {/* ✅ Center Label - dynamically based on max value */}
             <Label
               content={({ viewBox }) => {
                 if (viewBox && "cx" in viewBox && "cy" in viewBox) {
@@ -155,19 +144,19 @@ const MyPieChart = ({
                       y={cy}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      style={{ fontSize: "14px", fill: "#fff" }}
+                      style={{ fill: "#fff" }}
                     >
-                      <tspan x={cx} dy="-0.4em" fontSize="18" fontWeight="600">
-                        {data[2].value}
+                      <tspan x={cx} dy="-0.4em" fontSize="16" fontWeight="700">
+                        {data[2].label}
                       </tspan>
                       <tspan
                         x={cx}
                         dy="1.4em"
-                        fontSize="13"
+                        fontSize="12"
                         fontWeight="500"
                         fill="#fff"
                       >
-                        {data[2].label}
+                        {otherValue > 0 ? data[2].value : `-${data[2].value}`}
                       </tspan>
                     </text>
                   );
@@ -176,12 +165,6 @@ const MyPieChart = ({
               }}
             />
           </Pie>
-          {/* <Legend
-            verticalAlign="bottom"
-            align="center"
-            layout="vertical"
-            iconType="circle"
-          /> */}
         </PieChart>
       </ResponsiveContainer>
     </Box>

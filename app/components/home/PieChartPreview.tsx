@@ -16,13 +16,14 @@ const PieChartPreview = ({ province }: { province: Province }) => {
     },
     {
       label: "Deficit",
-      value: province.balance,
+      value: Math.abs(province.balance),
       color: province.balance > 0 ? "#f0f036" : "#E61313",
     },
   ];
   return (
     <MyPieChart
       data={chartData}
+      otherValue={province.balance}
       height={155}
       header={
         <Flex justify="between" align="center">

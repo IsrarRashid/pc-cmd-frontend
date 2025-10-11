@@ -1,6 +1,6 @@
 "use client";
 
-import { Dashboard, ProductionDashboard } from "@/app/page";
+import { Dashboard, ProductionDashboard, Province } from "@/app/page";
 import { Box, Dialog, Flex, Heading, ScrollArea } from "@radix-ui/themes";
 import AreaChartPreview from "./AreaChartPreview";
 import BarChartPreview from "./BarChartPreview";
@@ -12,6 +12,7 @@ import ProductFilter from "./ProductFilter";
 import ProvinceTile from "./ProvinceTile";
 import PunjabTableTile from "./PunjabTableTile";
 import TrackingMap from "./TrackingMap/TrackingMap";
+import { useEffect, useState } from "react";
 
 interface Props {
   dashboardData: Dashboard;
@@ -51,11 +52,18 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
   //     label: year.year,
   //   };
   // });
+  const [punjabProvince, setPunjabProvince] = useState<Province>();
 
-  const punjabProvince =
-    productionDashboardData.countryProduction.provinces.find(
-      (province) => province.provinceName === "Punjab"
-    );
+  useEffect(() => {
+    if (productionDashboardData?.countryProduction?.provinces) {
+      const punjabProvince =
+        productionDashboardData?.countryProduction?.provinces?.find(
+          (province) => province.provinceName === "Punjab"
+        );
+
+      if (punjabProvince) setPunjabProvince(punjabProvince);
+    }
+  }, [productionDashboardData?.countryProduction?.provinces]);
 
   return (
     <div>
@@ -461,7 +469,7 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
                   </DataList.Item>
                 </DataList.Root>
               </Card> */}
-              {productionDashboardData.countryProduction.provinces.map(
+              {productionDashboardData?.countryProduction?.provinces?.map(
                 (province) => (
                   <Dialog.Root key={province.provinceId}>
                     <Dialog.Trigger>
@@ -709,9 +717,11 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
         <div className="mb-3 w-full px-2">
           <div className="grid grid-cols-1 md:grid-cols-3 mb-3 gap-2.5">
             <Box className="w-full col-span-2 z-10 ">
-              <AreaChartPreview
-                productionDashboardData={productionDashboardData}
-              />
+              {productionDashboardData && (
+                <AreaChartPreview
+                  productionDashboardData={productionDashboardData}
+                />
+              )}
               {/* <Table.Root>
                   <Table.Header>
                     <Table.Row>
@@ -743,9 +753,11 @@ const Home = ({ dashboardData, productionDashboardData }: Props) => {
                 </Table.Root> */}
             </Box>
             <Box className="w-full z-10">
-              <BarChartPreview
-                productionDashboardData={productionDashboardData}
-              />
+              {productionDashboardData && (
+                <BarChartPreview
+                  productionDashboardData={productionDashboardData}
+                />
+              )}
             </Box>
           </div>
         </div>

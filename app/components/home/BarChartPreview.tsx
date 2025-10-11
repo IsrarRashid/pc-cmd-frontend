@@ -1,6 +1,7 @@
 import React from "react";
 import MyThinBarChart, { ChartType } from "../charts/MyThinBarChart";
 import { ProductionDashboard } from "@/app/page";
+import { Flex, Heading, Text } from "@radix-ui/themes";
 
 const BarChartPreview = ({
   productionDashboardData,
@@ -9,36 +10,51 @@ const BarChartPreview = ({
 }) => {
   const tinyBarChartData: ChartType[] = [
     {
-      label: "totalProduction",
-      value: productionDashboardData.seasonCycle.punjabProduction,
-      color: "#038907",
-    },
-    {
       label: "Punjab",
-      value: productionDashboardData.seasonCycle.punjabProduction,
+      value: productionDashboardData?.seasonCycle?.punjabProduction,
+      season: productionDashboardData?.seasonCycle?.punjabSession,
+      percentage: productionDashboardData?.seasonCycle?.punjabPercentage,
       color: "#f0f036",
     },
     {
       label: "Sindh",
-      value: productionDashboardData.seasonCycle.sindhProduction,
+      value: productionDashboardData?.seasonCycle?.sindhProduction,
+      season: productionDashboardData?.seasonCycle?.sindhSession,
+      percentage: productionDashboardData?.seasonCycle?.sindhPercentage,
       color: "#e61313",
     },
     {
       label: "Balochistan",
-      value: productionDashboardData.seasonCycle.balochistanProduction,
+      value: productionDashboardData?.seasonCycle?.balochistanProduction,
+      season: productionDashboardData?.seasonCycle?.balochistanSession,
+      percentage: productionDashboardData?.seasonCycle?.balochistanPercentage,
       color: "#B8885A",
     },
 
     {
       label: "KPK",
-      value: productionDashboardData.seasonCycle.kpkProduction,
+      value: productionDashboardData?.seasonCycle?.kpkProduction,
+      season: productionDashboardData?.seasonCycle?.kpkSession,
+      percentage: productionDashboardData?.seasonCycle?.kpkPercentage,
       color: "#37b5ef",
     },
   ];
 
   return (
     <MyThinBarChart
-      heading="Season Production"
+      heading={
+        <Flex justify="between" align="center" className="mb-2.5 ">
+          <Heading weight="medium" className="!text-sm !text-white">
+            Season Production
+          </Heading>
+          {/* <Flex>
+            In this Week <GoTriangleDown size={21} />
+          </Flex> */}
+          <Text weight="medium" className="!text-white" size="2">
+            {productionDashboardData?.seasonCycle?.totalProduction}
+          </Text>
+        </Flex>
+      }
       height={200}
       data={tinyBarChartData}
       layout="vertical"

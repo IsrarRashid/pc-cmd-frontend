@@ -109,7 +109,7 @@ const PakistanMap = ({
   useEffect(() => {
     if (selectedProvince) {
       const specificProvince =
-        productionDashboardData.countryProduction.provinces.find(
+        productionDashboardData.countryProduction?.provinces?.find(
           (province) =>
             province.provinceName === selectedProvince.properties.NAME_1
         );
@@ -197,22 +197,34 @@ const PakistanMap = ({
 
   const tinyBarChartData: ChartType[] = [
     {
-      label: "totalProduction",
-      value: productionDashboardData.seasonCycle.punjabProduction,
-    },
-    {
       label: "Punjab",
       value: productionDashboardData.seasonCycle.punjabProduction,
+      season: productionDashboardData.seasonCycle.punjabSession,
+      percentage: productionDashboardData.seasonCycle.punjabPercentage,
+      color: "#f0f036",
     },
     {
       label: "Sindh",
       value: productionDashboardData.seasonCycle.sindhProduction,
+      season: productionDashboardData.seasonCycle.sindhSession,
+      percentage: productionDashboardData.seasonCycle.sindhPercentage,
+      color: "#e61313",
     },
     {
       label: "Balochistan",
       value: productionDashboardData.seasonCycle.balochistanProduction,
+      season: productionDashboardData.seasonCycle.balochistanSession,
+      percentage: productionDashboardData.seasonCycle.balochistanPercentage,
+      color: "#B8885A",
     },
-    { label: "KPK", value: productionDashboardData.seasonCycle.kpkProduction },
+
+    {
+      label: "KPK",
+      value: productionDashboardData.seasonCycle.kpkProduction,
+      season: productionDashboardData.seasonCycle.kpkSession,
+      percentage: productionDashboardData.seasonCycle.kpkPercentage,
+      color: "#37b5ef",
+    },
   ];
 
   const handleProvinceSelect = (provinceName: string) => {
