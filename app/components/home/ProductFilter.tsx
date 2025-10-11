@@ -78,9 +78,8 @@ const ProductFilter = () => {
         className="!px-2 !py-[5px]"
       >
         {products.map((product) => (
-          <Tooltip content={product.label}>
+          <Tooltip key={product.value} content={product.label}>
             <IconButton
-              key={product.value}
               className={classnames({
                 "w-8 !h-8 !relative !rounded-full !transition-all !duration-200":
                   true,
