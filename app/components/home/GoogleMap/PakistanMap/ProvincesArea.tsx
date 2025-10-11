@@ -65,9 +65,6 @@ export default function ProvincesArea({
     coords: google.maps.LatLngLiteral;
     feature: ProvinceFeature;
   } | null>(null);
-  const [mousePos, setMousePos] = useState<google.maps.LatLngLiteral | null>(
-    null
-  );
 
   const map = useMap();
 
@@ -82,42 +79,7 @@ export default function ProvincesArea({
     [geoData]
   );
 
-  // Fit map to Pakistan’s bounds
-  //   useEffect(() => {
-  //     if (!map || !provinceCoords.length) return;
-
-  //     const bounds = new google.maps.LatLngBounds();
-  //     provinceCoords.forEach((multiPoly) =>
-  //       multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)))
-  //     );
-
-  //     map.fitBounds(bounds, { top: 30, bottom: 30, left: 30, right: 30 });
-
-  //     google.maps.event.addListenerOnce(map, "idle", () => {
-  //       map.setZoom(map.getZoom()! + 1);
-  //     });
-  //   }, [provinceCoords, map]);
-
-  // Function to fit map to a province when clicked
-  const fitProvinceBounds = useCallback(
-    (multiPoly: google.maps.LatLngLiteral[][]) => {
-      if (!map) return;
-      const bounds = new google.maps.LatLngBounds();
-      multiPoly.forEach((poly) =>
-        poly.forEach((point) => bounds.extend(point))
-      );
-      map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
-    },
-    [map]
-  );
-  // const fitProvinceBounds = (multiPoly: google.maps.LatLngLiteral[][]) => {
-  //   if (!map) return;
-  //   const bounds = new google.maps.LatLngBounds();
-  //   multiPoly.forEach((poly) => poly.forEach((point) => bounds.extend(point)));
-  //   map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
-  // };
-
-  // Define a pool of colors to assign
+  // Color pool
   const colorPool = [
     "#609052",
     "#BF092F",
@@ -131,41 +93,16 @@ export default function ProvincesArea({
     "#00CED1",
   ];
 
-  console.log("province data", data);
+  // Assign color to each province from backend data
+  const provinceColors = data.map((province, index) => ({
+    provinceName: province.provinceName,
+    color: colorPool[index % colorPool.length], // cycle through pool
+  }));
 
-  // Generate mapping from backend data
-  const provinceColors: { provinceName: string; color: string }[] = data.map(
-    (province, index) => ({
-      provinceName: province.provinceName,
-      color: colorPool[index % colorPool.length], // cycle if more provinces than colors
-    })
+  // Map to quickly lookup color by province name
+  const provinceColorMap = Object.fromEntries(
+    provinceColors.map((p) => [p.provinceName.toLowerCase(), p.color])
   );
-
-  console.log("provinceColors", provinceColors);
-
-  // const getProvinceColor = (
-  //   provinceData: Province,
-  //   selectedEconomicBalance?: ECONOMIC_BALANCE_ENUM
-  // ): string => {
-  //   const provinceColorObj = provinceColors.find(
-  //     (p) =>
-  //       p.provinceName.toLowerCase() === provinceData.provinceName.toLowerCase()
-  //   );
-  //   const baseColor = provinceColorObj?.color || "#ccc"; // fallback if not found
-
-  //   if (!selectedEconomicBalance) return baseColor;
-
-  //   switch (selectedEconomicBalance) {
-  //     case "PRODUCTION":
-  //       return provinceData.totalProduction > 0 ? "#609052" : baseColor;
-  //     case "CONSUMPTION":
-  //       return provinceData.totalConsumption > 0 ? "#f0f036" : baseColor;
-  //     case "DEFICIT":
-  //       return provinceData.balance > 0 ? "#e61313" : baseColor;
-  //     default:
-  //       return baseColor;
-  //   }
-  // };
 
   useEffect(() => {
     if (!map) return;
@@ -177,33 +114,29 @@ export default function ProvincesArea({
       const isSelected =
         selectedProvince?.properties.GID_1 === feature.properties.GID_1;
 
-      // Match province by name or ID
+      // Match province by name
       const provinceData = data.find(
         (p) =>
           p.provinceName.toLowerCase() ===
           feature.properties.NAME_1.toLowerCase()
       );
-      // Determine color based on totalProduction
-      let fillColor = "rgba(0,0,0,0)"; // default gray if no data #ccc
 
-      if (provinceData && selectedEconomicBalance) {
-        fillColor = selectedEconomicBalance;
-      }
+      const fillColor = provinceData?.provinceName
+        ? provinceColorMap[provinceData.provinceName.toLowerCase()]
+        : "#ccc"; // fallback
+
       const polygon = new google.maps.Polygon({
         paths: multiPoly,
-        // strokeColor: colors[i % colors.length],
         strokeColor: "#000",
         strokeOpacity: 0.7,
         strokeWeight: 3,
-        // fillColor: colors[i % colors.length],
         fillColor,
-        fillOpacity: isSelected ? 0 : 0.35, // hide fill if selected
-        clickable: !isSelected, // disable further clicks if selected
+        fillOpacity: isSelected ? 0 : 0.35,
+        clickable: !isSelected,
         map,
       });
 
       if (!isSelected) {
-        // Mouse move event to track cursor
         polygon.addListener("mousemove", (e: google.maps.MapMouseEvent) => {
           if (e.latLng) {
             setHoveredProvince({
@@ -213,16 +146,17 @@ export default function ProvincesArea({
           }
         });
 
-        // Mouse out event
         polygon.addListener("mouseout", () => {
           setHoveredProvince(null);
-          setMousePos(null);
         });
 
-        // Click event to zoom to province bounds and mark as selected
         polygon.addListener("click", () => {
           if (onProvinceClick) onProvinceClick(feature);
-          fitProvinceBounds(multiPoly);
+          const bounds = new google.maps.LatLngBounds();
+          multiPoly.forEach((poly) =>
+            poly.forEach((point) => bounds.extend(point))
+          );
+          map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
         });
       }
 
@@ -230,7 +164,7 @@ export default function ProvincesArea({
     });
 
     return () => {
-      polygons.forEach((p) => p.setMap(null)); // Cleanup
+      polygons.forEach((p) => p.setMap(null));
     };
   }, [
     map,
@@ -238,17 +172,14 @@ export default function ProvincesArea({
     geoData.features,
     selectedProvince,
     onProvinceClick,
-    fitProvinceBounds,
     data,
+    provinceColorMap,
   ]);
 
   return (
     <>
       {hoveredProvince && (
-        <InfoWindow
-          position={mousePos || hoveredProvince.coords}
-          pixelOffset={[0, -30]}
-        >
+        <InfoWindow position={hoveredProvince.coords} pixelOffset={[0, -30]}>
           <ProvinceCard Province={hoveredProvince.feature} data={data} />
         </InfoWindow>
       )}

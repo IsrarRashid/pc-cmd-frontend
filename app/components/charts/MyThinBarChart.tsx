@@ -171,11 +171,10 @@ const MyThinBarChart = ({
                 fontWeight="500"
               />
               {/* Show Percentage On Top of Bar */}
-
               <LabelList
                 dataKey="percentage"
                 position={layout === "vertical" ? "right" : "top"} // always on top
-                formatter={(val) => `${val}%`} // add % symbol
+                formatter={(val) => `${val}%,`} // add % symbol
                 fill="#fff"
                 fontSize={10}
                 fontWeight="500"
@@ -184,7 +183,7 @@ const MyThinBarChart = ({
               <LabelList
                 dataKey="value"
                 position={layout === "vertical" ? "right" : "top"} // always on top
-                formatter={(val) => `${val}%`} // add % symbol
+                formatter={(val) => `${val}`} // add % symbol
                 fill="#fff"
                 fontSize={10}
                 fontWeight="500"

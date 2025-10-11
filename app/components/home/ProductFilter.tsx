@@ -1,6 +1,6 @@
 "use client";
 import { PRODUCT_API } from "@/app/APIs";
-import { Avatar, Flex, IconButton } from "@radix-ui/themes";
+import { Avatar, Flex, IconButton, Tooltip } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classnames from "classnames";
@@ -78,39 +78,41 @@ const ProductFilter = () => {
         className="!px-2 !py-[5px]"
       >
         {products.map((product) => (
-          <IconButton
-            key={product.value}
-            className={classnames({
-              "w-8 !h-8 !relative !rounded-full !transition-all !duration-200":
-                true,
-              "!text-white !bg-[rgba(170,60,49,0.1)] !border-[1.44px] !border-[#AA3C31] ":
-                selectedButton === Number(product.value),
-              " !bg-transparent": selectedButton !== Number(product.value),
-            })}
-            onClick={() => {
-              handleChange(product.value);
-            }}
-          >
-            {selectedButton === Number(product.value) && (
+          <Tooltip content={product.label}>
+            <IconButton
+              key={product.value}
+              className={classnames({
+                "w-8 !h-8 !relative !rounded-full !transition-all !duration-200":
+                  true,
+                "!text-white !bg-[rgba(170,60,49,0.1)] !border-[1.44px] !border-[#AA3C31] ":
+                  selectedButton === Number(product.value),
+                " !bg-transparent": selectedButton !== Number(product.value),
+              })}
+              onClick={() => {
+                handleChange(product.value);
+              }}
+            >
+              {selectedButton === Number(product.value) && (
+                <div className="absolute">
+                  <FaRegCircle size={36} className="text-[#AA3C31]" />
+                </div>
+              )}
               <div className="absolute">
-                <FaRegCircle size={36} className="text-[#AA3C31]" />
+                <Avatar
+                  src={
+                    product.icon.startsWith("/upload")
+                      ? product.icon
+                      : `/upload/${product.icon}`
+                  }
+                  alt={product.icon}
+                  width={23}
+                  height={23}
+                  className="!w-[23px] !h-[23px]"
+                  fallback="?"
+                />
               </div>
-            )}
-            <div className="absolute">
-              <Avatar
-                src={
-                  product.icon.startsWith("/upload")
-                    ? product.icon
-                    : `/upload/${product.icon}`
-                }
-                alt={product.icon}
-                width={23}
-                height={23}
-                className="!w-[23px] !h-[23px]"
-                fallback="?"
-              />
-            </div>
-          </IconButton>
+            </IconButton>
+          </Tooltip>
         ))}
       </Flex>
     </>
