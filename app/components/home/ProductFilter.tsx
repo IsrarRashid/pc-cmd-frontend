@@ -4,8 +4,8 @@ import { Avatar, Flex, IconButton } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classnames from "classnames";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaRegCircle } from "react-icons/fa";
 import { Product } from "../Navbar/forms/ProductForm";
 
@@ -22,16 +22,20 @@ import { Product } from "../Navbar/forms/ProductForm";
 
 const ProductFilter = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPath = usePathname();
+
   const { data } = useQuery<Product[]>({
     queryKey: ["data"],
     queryFn: () => axios.get(PRODUCT_API).then((res) => res.data),
-    staleTime: 60 * 1000, // 60s
+    staleTime: 60 * 1000,
     retry: 3,
   });
 
   const [selectedButton, setSelectedButton] = useState<number>();
+  const [initialized, setInitialized] = useState(false);
 
-  // ✅ useMemo to avoid recreating `products` each render
+  // ✅ Memoized products list
   const products = useMemo(
     () =>
       data?.map((product) => ({
@@ -41,17 +45,29 @@ const ProductFilter = () => {
       })) ?? [],
     [data]
   );
-  const [initialized, setInitialized] = useState(false);
 
+  // ✅ Reusable method to update URL without losing other params
+  const handleChange = useCallback(
+    (productValue: string) => {
+      if (!productValue) return;
+      setSelectedButton(Number(productValue));
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("product", productValue);
+
+      router.push(`${currentPath}?${params.toString()}`);
+      console.log("Navigating to:", `${currentPath}?${params.toString()}`);
+    },
+    [router, searchParams, currentPath]
+  );
+
+  // ✅ Initialize on first load
   useEffect(() => {
     if (!initialized && products.length > 0) {
       setInitialized(true);
-      setSelectedButton(Number(products[0].value));
-      const query = products[0].value ? `?product=${products[0].value}` : "";
-      router.push("/" + query);
-      console.log("Navigating to:", "/" + query);
+      handleChange(products[0].value);
     }
-  }, [products, initialized, router]);
+  }, [products, initialized, handleChange]);
 
   return (
     <>
@@ -72,10 +88,7 @@ const ProductFilter = () => {
               " !bg-transparent": selectedButton !== Number(product.value),
             })}
             onClick={() => {
-              setSelectedButton(Number(product.value));
-              const query = product.value ? `?product=${product.value}` : "";
-              router.push("/" + query);
-              console.log("Navigating to:", "/" + query);
+              handleChange(product.value);
             }}
           >
             {selectedButton === Number(product.value) && (

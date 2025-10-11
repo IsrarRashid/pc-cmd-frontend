@@ -1,27 +1,48 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+// const ECONOMIC_BALANCE = {
+//   Production: "PRODUCTION",
+//   Consumption: "CONSUMPTION",
+//   Deficit: "DEFICIT",
+// } as const;
+
+// type ECONOMIC_BALANCE =
+//   (typeof ECONOMIC_BALANCE)[keyof typeof ECONOMIC_BALANCE];
+
+// const economicBalances: { label: string; value?: ECONOMIC_BALANCE }[] = [
+//   { label: "Production", value: "PRODUCTION" },
+//   { label: "Consumption", value: "CONSUMPTION" },
+//   { label: "Deficit", value: "DEFICIT" },
+// ];
 
 const EconomicBalanceFilter = () => {
   const searchParams = useSearchParams();
-  const departmentCategory =
-    searchParams.get("departmentCategory") || undefined;
+  const currentPath = usePathname();
+  const router = useRouter();
+  const economicBalance = searchParams.get("economicBalance") || undefined;
 
-  const [selectedButton, setSelectedButton] = useState(1);
-  // const router = useRouter();
-  // const handleStatusChange = useCallback(
-  //   (departmentCategory: string) => {
-  //     const query =
-  //       departmentCategory && `?departmentCategory=${departmentCategory}`;
-  //     router.push(currentPath + query);
-  //   },
-  //   [router, currentPath]
-  // );
+  const [selectedButton, setSelectedButton] = useState(0);
+
+  const economicBalanceData = ["Production", "Consumption", "Deficit"];
+
+  const handleStatusChange = useCallback(
+    (economicBalance: string) => {
+      const params = new URLSearchParams(searchParams.toString()); // ✅ clone current params
+      params.set("economicBalance", economicBalance); // ✅ update only one param
+      router.push(`${currentPath}?${params.toString()}`); // ✅ preserve others
+    },
+    [router, currentPath, searchParams]
+  );
 
   useEffect(() => {
-    if (departmentCategory) setSelectedButton(2);
-  }, [departmentCategory]);
+    if (economicBalanceData && !economicBalance) {
+      setSelectedButton(0);
+      handleStatusChange(economicBalanceData[0]);
+    }
+  }, [economicBalanceData, economicBalance, handleStatusChange]);
 
   return (
     <div className="flex flex-wrap bg-[#063A6A] shadow-[0_0_0_1px_#1BCEF5]">
@@ -46,11 +67,14 @@ const EconomicBalanceFilter = () => {
         ></div>
 
         {/* BUTTONS */}
-        {["Production", "Consumption", "Deficit"].map((label, index) => (
+        {economicBalanceData.map((label, index) => (
           <button
             key={index}
             type="button"
-            onClick={() => setSelectedButton(index)}
+            onClick={() => {
+              setSelectedButton(index);
+              handleStatusChange(label);
+            }}
             className={`relative z-[2] flex items-center justify-center w-1/3 text-sm font-medium  border-0 shadow-none transition-colors duration-200 ${
               selectedButton === index ? "text-white" : "text-gray-200"
             }`}

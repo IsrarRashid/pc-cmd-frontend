@@ -35,7 +35,7 @@ export default function RootLayout({
         <ThemeSwitcher>
           <QueryClientProvider>
             <NavbarToggle />
-            <main className="p-0">{children}</main>
+            <main className="p-0 min-h-screen w-full">{children}</main>
           </QueryClientProvider>
         </ThemeSwitcher>
         <ToastContainers />

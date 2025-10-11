@@ -4,6 +4,7 @@ import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ProvinceCard from "../Cards/ProvinceCard";
 import { Province } from "@/app/page";
+import { ECONOMIC_BALANCE_ENUM } from "../../types/types";
 
 // --- Interfaces ---
 export interface ProvinceFeature {
@@ -40,6 +41,7 @@ interface Props {
   selectedProvince?: ProvinceFeature | null;
   onProvinceClick?: (province: ProvinceFeature) => void;
   data: Province[];
+  selectedEconomicBalance: ECONOMIC_BALANCE_ENUM | undefined;
 }
 
 // const colors = [
@@ -57,6 +59,7 @@ export default function ProvincesArea({
   onProvinceClick,
   selectedProvince,
   data,
+  selectedEconomicBalance,
 }: Props) {
   const [hoveredProvince, setHoveredProvince] = useState<{
     coords: google.maps.LatLngLiteral;
@@ -114,6 +117,24 @@ export default function ProvincesArea({
   //   map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
   // };
 
+  const getProvinceColor = (
+    provinceData: Province,
+    selectedEconomicBalance?: ECONOMIC_BALANCE_ENUM
+  ): string => {
+    if (!provinceData || !selectedEconomicBalance) return "#ccc";
+
+    switch (selectedEconomicBalance) {
+      case "PRODUCTION":
+        return provinceData.totalProduction > 0 ? "#32CD32" : "rgba(0,0,0,0)";
+      case "CONSUMPTION":
+        return provinceData.totalConsumption > 0 ? "#f0f036" : "rgba(0,0,0,0)";
+      case "DEFICIT":
+        return provinceData.balance > 0 ? "#e61313" : "rgba(0,0,0,0)";
+      default:
+        return "#ccc";
+    }
+  };
+
   useEffect(() => {
     if (!map) return;
 
@@ -133,11 +154,8 @@ export default function ProvincesArea({
       // Determine color based on totalProduction
       let fillColor = "rgba(0,0,0,0)"; // default gray if no data #ccc
 
-      if (provinceData) {
-        fillColor =
-          provinceData.totalProduction > 0
-            ? "#32CD32" // bright green
-            : "#FF6347"; // red for zero or negative
+      if (provinceData && selectedEconomicBalance) {
+        fillColor = getProvinceColor(provinceData, selectedEconomicBalance); // default fallback color
       }
       const polygon = new google.maps.Polygon({
         paths: multiPoly,

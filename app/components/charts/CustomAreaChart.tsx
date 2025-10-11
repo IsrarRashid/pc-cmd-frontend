@@ -229,9 +229,10 @@ const CustomAreaChart = ({
               }}
             />
             <CartesianGrid
-              strokeDasharray="500 500"
+              strokeDasharray="10 10"
+              vertical={true}
               horizontal={false}
-              stroke="#44444F"
+              stroke="rgba(53, 82, 151, 0.4)"
               strokeWidth={1}
             />
           </AreaChart>

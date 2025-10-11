@@ -103,7 +103,7 @@ const MyThinBarChart = ({
             data={data}
             margin={
               layout === "vertical"
-                ? { top: 10, right: 60, left: 70, bottom: 20 }
+                ? { top: 0, right: 10, left: -10, bottom: 0 }
                 : { top: 20, right: 10, left: 20, bottom: 10 }
             }
             barSize={25}
@@ -142,9 +142,10 @@ const MyThinBarChart = ({
             <Tooltip {...tooltipStyles} cursor={{ fill: "transparent" }} />
             <CartesianGrid
               strokeDasharray="10 10"
-              vertical={false}
-              stroke="#44444F"
-              strokeWidth={2}
+              vertical={true}
+              horizontal={false}
+              stroke="rgba(53, 82, 151, 0.4)"
+              strokeWidth={1}
             />
             <Bar
               dataKey="value"

@@ -24,6 +24,7 @@ import ProvincesArea, {
   GeoJSONProvinces,
   ProvinceFeature,
 } from "./ProvincesArea";
+import { ECONOMIC_BALANCE_ENUM } from "../../types/types";
 
 //========= for Adding two more divisions in punjab division
 const punjabDistricts = districts.features.filter(
@@ -89,10 +90,42 @@ const PakistanMap = ({ productionDashboardData, productsData }: Props) => {
   console.log("specificProvince", specificProvince);
   console.log("specificDivision", specificDivision);
   console.log("specificDivision", specificDivision);
-
   const searchParams = useSearchParams();
   const product = searchParams.get("product") || undefined;
+  const economicBalance = searchParams.get("economicBalance") || undefined;
+
   const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [selectedEconomicBalance, setSelectedEconomicBalance] =
+    useState<ECONOMIC_BALANCE_ENUM>();
+
+  const types = Object.values(ECONOMIC_BALANCE_ENUM) as ECONOMIC_BALANCE_ENUM[];
+
+  // Convert and validate economicBalance from URL
+  useEffect(() => {
+    if (economicBalance) {
+      const upperValue = economicBalance.toUpperCase();
+
+      // ✅ Check if it's one of the allowed enum values
+      if (types.includes(upperValue as ECONOMIC_BALANCE_ENUM)) {
+        setSelectedEconomicBalance(upperValue as ECONOMIC_BALANCE_ENUM);
+      } else {
+        console.warn(`Invalid economicBalance value: ${economicBalance}`);
+        setSelectedEconomicBalance(undefined);
+      }
+    } else {
+      // If no query param present
+      setSelectedEconomicBalance(undefined);
+    }
+
+    console.log("pak map economicBalance:", economicBalance);
+  }, [economicBalance, types]); // ✅ use the actual param as dependency
+
+  useEffect(() => {
+    if (selectedEconomicBalance) {
+      console.log("✅ Valid selectedEconomicBalance:", selectedEconomicBalance);
+      console.log("All enum types:", types);
+    }
+  }, [selectedEconomicBalance, types]);
 
   useEffect(() => {
     if (product && productsData) {
@@ -487,6 +520,7 @@ const PakistanMap = ({ productionDashboardData, productsData }: Props) => {
                   data={
                     productionDashboardData?.countryProduction?.provinces ?? []
                   }
+                  selectedEconomicBalance={selectedEconomicBalance}
                 />
               )}
               {specificProvince?.divisions && (

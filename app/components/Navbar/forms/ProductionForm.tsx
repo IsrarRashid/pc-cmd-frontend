@@ -46,32 +46,34 @@ const schema = z.object({
     .min(1, "Please add district!")
     .transform((val) => Number(val))
     .refine((val) => !isNaN(val), { message: "Please add district!" }),
-  population: z.number().refine((val) => !isNaN(val) && val > 0, {
-    message: "Please add population!",
-  }),
+  population: z
+    .preprocess((val) => {
+      if (val === "" || val === undefined || val === null) return 0; // 👈 default 0 for empty
+      return Number(val);
+    }, z.number().min(0, { message: "Population cannot be negative!" }).default(0))
+    .optional(),
   productionQuantity: z
-    .number()
-    .min(1, "Please add production quantity!")
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), {
-      message: "Please add production quantity!",
-    }),
+    .preprocess((val) => {
+      if (val === "" || val === undefined || val === null) return 0; // 👈 default 0 for empty
+      return Number(val);
+    }, z.number().min(0, { message: "Production Quantity cannot be negative!" }).default(0))
+    .optional(),
   consumptionQuantity: z
-    .number()
-    .min(1, "Please add consumption quantity!")
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), {
-      message: "Please add consumption quantity!",
-    }),
+    .preprocess((val) => {
+      if (val === "" || val === undefined || val === null) return 0; // 👈 default 0 for empty
+      return Number(val);
+    }, z.number().min(0, { message: "Consumption Quantity cannot be negative!" }).default(0))
+    .optional(),
   unitId: z
-    .number()
-    .min(1, "Please add unit!")
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), { message: "Please add unit!" }),
+    .preprocess((val) => {
+      if (val === "" || val === undefined || val === null) return 0; // 👈 default 0 for empty
+      return Number(val);
+    }, z.number().min(0, { message: "Unit cannot be negative!" }).default(0))
+    .optional(),
   createdAt: z.string().optional().default(new Date().toISOString()),
-  createdBy: z.string().min(1, { message: "Please add Created By!" }),
-  updatedAt: z.string().min(1, { message: "Please add Updated At!" }),
-  updatedBy: z.string().min(1, { message: "Please add Updated By!" }),
+  createdBy: z.string().optional().default("admin"),
+  updatedAt: z.string().optional().default(new Date().toISOString()),
+  updatedBy: z.string().optional().default("admin"),
 });
 
 const defaultValues: ProductionInput = {
@@ -85,10 +87,10 @@ const defaultValues: ProductionInput = {
   productionQuantity: 0,
   consumptionQuantity: 0,
   unitId: 0,
-  createdAt: "",
-  createdBy: "",
-  updatedAt: "",
-  updatedBy: "",
+  createdAt: new Date().toISOString(),
+  createdBy: "admin",
+  updatedAt: new Date().toISOString(),
+  updatedBy: "admin",
 };
 
 // Output type (what you get after validation)

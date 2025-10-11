@@ -24,7 +24,7 @@ const BarChartPreview = ({
       color: "#e61313",
     },
     {
-      label: "Balochistan",
+      label: "B-tan",
       value: productionDashboardData?.seasonCycle?.balochistanProduction,
       season: productionDashboardData?.seasonCycle?.balochistanSession,
       percentage: productionDashboardData?.seasonCycle?.balochistanPercentage,
@@ -43,7 +43,7 @@ const BarChartPreview = ({
   return (
     <MyThinBarChart
       heading={
-        <Flex justify="between" align="center" className="mb-2.5 ">
+        <Flex justify="between" align="center" className="!mb-2.5">
           <Heading weight="medium" className="!text-sm !text-white">
             Season Production
           </Heading>
@@ -55,7 +55,7 @@ const BarChartPreview = ({
           </Text>
         </Flex>
       }
-      height={200}
+      height={173}
       data={tinyBarChartData}
       layout="vertical"
     />

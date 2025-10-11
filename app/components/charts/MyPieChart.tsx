@@ -128,6 +128,8 @@ const MyPieChart = ({ height = 300, data, header, otherValue }: Props) => {
             cornerRadius={4}
             labelLine={false}
             label={renderCustomizedLabel}
+            stroke="none" // 👈 remove border line
+            strokeWidth={0} // 👈 ensure it's fully gone
           >
             {data.map((entry) => (
               <Cell key={`cell-${entry.label}`} fill={entry.color} />

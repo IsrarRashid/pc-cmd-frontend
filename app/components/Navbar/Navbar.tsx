@@ -23,8 +23,27 @@ import { toast } from "react-toastify";
 import MegaMenu from "./MegaMenu";
 
 const Navbar = () => {
+  const [isClient, setClient] = useState(false);
+
+  const [toggleFullScreen, setToggleFullScreen] = useState(false);
+  console.log("toggleFullScreen", toggleFullScreen);
+  useEffect(() => {
+    setClient(true);
+  }, []);
+
+  const handleFullScreen = () => {
+    if (isClient) {
+      if (!document.fullscreenElement) {
+        setToggleFullScreen(true);
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+        setToggleFullScreen(false);
+      }
+    }
+  };
   return (
-    <nav className="py-1 px-[25px] bg-primary">
+    <nav className="py-1 px-[25px] bg-[#063A6A]">
       <Flex align="center" justify="between" gap="2">
         <Box>
           <div className="flex items-center gap-[22px]">
@@ -76,15 +95,18 @@ const Navbar = () => {
         {/* <Box className="hidden lg:block">
           <NavLinks />
         </Box> */}
+
         <Flex align="center" className="gap-[13px]">
-          <Image
-            className="rounded-4xl"
-            src="/icons/maximize-screen.svg"
-            width={24}
-            height={24}
-            style={{ width: "24px", height: "24px" }}
-            alt="maximize-screen"
-          />
+          <IconButton onClick={handleFullScreen} className="!bg-transparent">
+            <Image
+              className="rounded-4xl"
+              src="/icons/maximize-screen.svg"
+              width={24}
+              height={24}
+              style={{ width: "24px", height: "24px" }}
+              alt="maximize-screen"
+            />
+          </IconButton>
           <div className="flex items-center">
             <AuthStatus />
           </div>

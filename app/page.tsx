@@ -173,6 +173,16 @@ const HomePage = async ({ searchParams }: Props) => {
   console.log("productionDashboardData", productionDashboardData);
   console.log("productsData", productsData);
 
+  // const economicBalances = Object.values(
+  //   ECONOMIC_BALANCE_ENUM
+  // ) as ECONOMIC_BALANCE_ENUM[]; // Cast to ECONOMIC_BALANCE_ENUM[]
+  // const myEconomicBalance = economicBalances.includes(
+  //   economicBalance as ECONOMIC_BALANCE_ENUM
+  // )
+  //   ? (economicBalance as ECONOMIC_BALANCE_ENUM)
+  //   : undefined;
+
+  // console.log("myEconomicBalance", myEconomicBalance);
   return (
     <DashboardWrapper>
       {productionDashboardData && dashboardData && productsData && (
