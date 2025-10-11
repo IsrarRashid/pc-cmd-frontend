@@ -1,14 +1,7 @@
-import {
-  Button,
-  Flex,
-  DataList,
-  Progress,
-  Text,
-  Separator,
-} from "@radix-ui/themes";
-import Card from "./Card";
 import { Province } from "@/app/page";
+import { Button, DataList, Flex, Progress, Text } from "@radix-ui/themes";
 import { Fragment } from "react";
+import Card from "./Card";
 
 const ProvinceTile = ({ province }: { province: Province }) => {
   return (
@@ -136,12 +129,12 @@ const ProvinceTile = ({ province }: { province: Province }) => {
                   </DataList.Value>
                 </DataList.Item>
               ))}
-              <DataList.Item className="!flex !justify-between !items-center ">
+              {/* <DataList.Item className="!flex !justify-between !items-center ">
                 <Separator
                   size="4"
                   className="rounded-full !bg-white !px-0 custom-separator"
                 />
-              </DataList.Item>
+              </DataList.Item> */}
             </Fragment>
           );
         })}

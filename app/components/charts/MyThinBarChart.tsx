@@ -103,7 +103,7 @@ const MyThinBarChart = ({
             data={data}
             margin={
               layout === "vertical"
-                ? { top: 0, right: 10, left: -10, bottom: 0 }
+                ? { top: 0, right: 100, left: -10, bottom: 0 }
                 : { top: 20, right: 10, left: 20, bottom: 10 }
             }
             barSize={25}
@@ -164,11 +164,31 @@ const MyThinBarChart = ({
               ))}
               {/* ✅ Show Values Inside Bar */}
               <LabelList
-                dataKey="value"
+                dataKey="season"
                 position={layout === "vertical" ? "insideLeft" : "top"} // adjust per layout
                 fill="#000"
-                fontSize={14}
-                fontWeight="normal"
+                fontSize={10}
+                fontWeight="500"
+              />
+              {/* Show Percentage On Top of Bar */}
+
+              <LabelList
+                dataKey="percentage"
+                position={layout === "vertical" ? "right" : "top"} // always on top
+                formatter={(val) => `${val}%`} // add % symbol
+                fill="#fff"
+                fontSize={10}
+                fontWeight="500"
+                dy={layout === "vertical" ? -4 : -10} // move slightly above
+              />
+              <LabelList
+                dataKey="value"
+                position={layout === "vertical" ? "right" : "top"} // always on top
+                formatter={(val) => `${val}%`} // add % symbol
+                fill="#fff"
+                fontSize={10}
+                fontWeight="500"
+                dy={layout === "vertical" ? 8 : 0} // vertical offset from percentage
               />
             </Bar>
           </BarChart>

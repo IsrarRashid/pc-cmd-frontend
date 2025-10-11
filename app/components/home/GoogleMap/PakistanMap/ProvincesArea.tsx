@@ -117,23 +117,55 @@ export default function ProvincesArea({
   //   map.fitBounds(bounds, { top: 20, bottom: 20, left: 20, right: 20 });
   // };
 
-  const getProvinceColor = (
-    provinceData: Province,
-    selectedEconomicBalance?: ECONOMIC_BALANCE_ENUM
-  ): string => {
-    if (!provinceData || !selectedEconomicBalance) return "#ccc";
+  // Define a pool of colors to assign
+  const colorPool = [
+    "#609052",
+    "#BF092F",
+    "#3BA2F1",
+    "#FF6347",
+    "#9370DB",
+    "#20B2AA",
+    "#FF8C00",
+    "#FF69B4",
+    "#8B4513",
+    "#00CED1",
+  ];
 
-    switch (selectedEconomicBalance) {
-      case "PRODUCTION":
-        return provinceData.totalProduction > 0 ? "#32CD32" : "rgba(0,0,0,0)";
-      case "CONSUMPTION":
-        return provinceData.totalConsumption > 0 ? "#f0f036" : "rgba(0,0,0,0)";
-      case "DEFICIT":
-        return provinceData.balance > 0 ? "#e61313" : "rgba(0,0,0,0)";
-      default:
-        return "#ccc";
-    }
-  };
+  console.log("province data", data);
+
+  // Generate mapping from backend data
+  const provinceColors: { provinceName: string; color: string }[] = data.map(
+    (province, index) => ({
+      provinceName: province.provinceName,
+      color: colorPool[index % colorPool.length], // cycle if more provinces than colors
+    })
+  );
+
+  console.log("provinceColors", provinceColors);
+
+  // const getProvinceColor = (
+  //   provinceData: Province,
+  //   selectedEconomicBalance?: ECONOMIC_BALANCE_ENUM
+  // ): string => {
+  //   const provinceColorObj = provinceColors.find(
+  //     (p) =>
+  //       p.provinceName.toLowerCase() === provinceData.provinceName.toLowerCase()
+  //   );
+  //   const baseColor = provinceColorObj?.color || "#ccc"; // fallback if not found
+
+  //   if (!selectedEconomicBalance) return baseColor;
+
+  //   switch (selectedEconomicBalance) {
+  //     case "PRODUCTION":
+  //       return provinceData.totalProduction > 0 ? "#609052" : baseColor;
+  //     case "CONSUMPTION":
+  //       return provinceData.totalConsumption > 0 ? "#f0f036" : baseColor;
+  //     case "DEFICIT":
+  //       return provinceData.balance > 0 ? "#e61313" : baseColor;
+  //     default:
+  //       return baseColor;
+  //   }
+  // };
 
   useEffect(() => {
     if (!map) return;
@@ -155,7 +187,7 @@ export default function ProvincesArea({
       let fillColor = "rgba(0,0,0,0)"; // default gray if no data #ccc
 
       if (provinceData && selectedEconomicBalance) {
-        fillColor = getProvinceColor(provinceData, selectedEconomicBalance); // default fallback color
+        fillColor = selectedEconomicBalance;
       }
       const polygon = new google.maps.Polygon({
         paths: multiPoly,

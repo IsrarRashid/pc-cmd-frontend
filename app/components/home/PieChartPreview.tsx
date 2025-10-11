@@ -7,17 +7,17 @@ const PieChartPreview = ({ province }: { province: Province }) => {
     {
       label: "Production",
       value: province.totalProduction,
-      color: "#038907",
+      color: "#02B377",
     },
     {
       label: "Consumption",
       value: province.totalConsumption,
-      color: "#FEB019",
+      color: "#3BA2F1",
     },
     {
       label: "Deficit",
       value: Math.abs(province.balance),
-      color: province.balance > 0 ? "#f0f036" : "#E61313",
+      color: province.balance > 0 ? "#3D6730" : "#FEB019",
     },
   ];
   return (

@@ -13,21 +13,27 @@ const BarChartPreview = ({
       label: "Punjab",
       value: productionDashboardData?.seasonCycle?.punjabProduction,
       season: productionDashboardData?.seasonCycle?.punjabSession,
-      percentage: productionDashboardData?.seasonCycle?.punjabPercentage,
+      percentage: Number(
+        productionDashboardData?.seasonCycle?.punjabPercentage.toFixed(2)
+      ),
       color: "#f0f036",
     },
     {
       label: "Sindh",
       value: productionDashboardData?.seasonCycle?.sindhProduction,
       season: productionDashboardData?.seasonCycle?.sindhSession,
-      percentage: productionDashboardData?.seasonCycle?.sindhPercentage,
+      percentage: Number(
+        productionDashboardData?.seasonCycle?.sindhPercentage.toFixed(2)
+      ),
       color: "#e61313",
     },
     {
       label: "B-tan",
       value: productionDashboardData?.seasonCycle?.balochistanProduction,
       season: productionDashboardData?.seasonCycle?.balochistanSession,
-      percentage: productionDashboardData?.seasonCycle?.balochistanPercentage,
+      percentage: Number(
+        productionDashboardData?.seasonCycle?.balochistanPercentage.toFixed(2)
+      ),
       color: "#B8885A",
     },
 
@@ -35,7 +41,9 @@ const BarChartPreview = ({
       label: "KPK",
       value: productionDashboardData?.seasonCycle?.kpkProduction,
       season: productionDashboardData?.seasonCycle?.kpkSession,
-      percentage: productionDashboardData?.seasonCycle?.kpkPercentage,
+      percentage: Number(
+        productionDashboardData?.seasonCycle?.kpkPercentage.toFixed(2)
+      ),
       color: "#37b5ef",
     },
   ];

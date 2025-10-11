@@ -3,6 +3,7 @@ import Card from "./Card";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import PieChartPreview from "./PieChartPreview";
 import { Province } from "@/app/page";
+import classnames from "classnames";
 
 const PieTile = ({ province }: { province: Province }) => {
   return (
@@ -11,7 +12,7 @@ const PieTile = ({ province }: { province: Province }) => {
         <PieChartPreview province={province} />
         <Flex justify="between">
           <Flex align="center" gap="1">
-            <Box className="w-[8px] h-[8px] bg-[#038907] rounded-[4.42px]"></Box>
+            <Box className="w-[8px] h-[8px] bg-[#02B377] rounded-[4.42px]"></Box>
             <Text weight="medium" className="text-[0.5141rem] !text-white">
               Production
             </Text>
@@ -20,7 +21,7 @@ const PieTile = ({ province }: { province: Province }) => {
             </Text>
           </Flex>
           <Flex align="center" gap="1">
-            <Box className="w-[8px] h-[8px] bg-[#FEB019] rounded-[4.42px]"></Box>
+            <Box className="w-[8px] h-[8px] bg-[#3BA2F1] rounded-[4.42px]"></Box>
             <Text weight="medium" className="text-[0.5141rem] !text-white">
               Consumption
             </Text>
@@ -29,7 +30,13 @@ const PieTile = ({ province }: { province: Province }) => {
             </Text>
           </Flex>
           <Flex align="center" gap="1">
-            <Box className="w-[8px] h-[8px] bg-[#E61313] rounded-[4.42px]"></Box>
+            <Box
+              className={classnames({
+                "bg-[#3D6730]": province.balance > 0,
+                "bg-[#FEB019]": province.balance < 0,
+                "w-[8px] h-[8px]  rounded-[4.42px]": true,
+              })}
+            ></Box>
             <Text weight="medium" className="text-[0.5141rem] !text-white">
               Deficit
             </Text>
